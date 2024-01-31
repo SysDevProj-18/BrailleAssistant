@@ -1,23 +1,22 @@
 # Speech to Text
-To run it, Docker needs to be installed. Aftewards run the following command:
-```
-docker-compose up -d 
-```
-The `-d` flag is optional and runs the container in the background.
 
-Afterwards there's a couple of ways to test it out. For now I just cloned one of vosk's repos which has 
-a bunch of useful scripts. Here's some examples:
-
-## Run websocket which will listen to the microphone
+## Pre-requisites
+`sounddevice, websockets` needs to be installed for this to work. (`pip3 install sounddevice websockets`)
+For the Pi (at least on Raspbian OS), Portaudio library is not installed so the following needs to be done:
 ```
-cd vosk-server/websocket/
-pip3 install sounddevice
+sudo apt-get install libportaudio2
+```
+
+A model needs to be installed. Run the following script to install the model:
+```
+python install_model.py
+```
+
+
+## Run the websocket receiver
+`python3 asr_server.py model/en`
+
+## Run the websocket sender
+```
 ./test_microphone.py -u ws://localhost:2700
 ```
-
-## Run websocket which will listen to a file
-```
-cd vosk-server/websocket/
-./test.py test16k.wav
-```
-
