@@ -9,7 +9,7 @@ sudo apt-get install libportaudio2
 
 A model needs to be installed. Run the following script to install the model:
 ```
-python install_model.py
+python install-model.py
 ```
 
 
@@ -18,5 +18,5 @@ python install_model.py
 
 ## Run the websocket sender
 ```
-./test_microphone.py -u ws://localhost:2700
+./test_microphone.py -u ws://localhost:2700 (windows: $ python test_microphone.py -u ws://localhost:2700)
 ```
