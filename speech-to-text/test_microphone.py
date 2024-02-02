@@ -8,6 +8,7 @@ import websockets
 import logging
 import sounddevice as sd
 import argparse
+import keyboard
 
 def int_or_str(text):
     """Helper function for argument parsing."""
@@ -18,23 +19,26 @@ def int_or_str(text):
 
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
-    loop.call_soon_threadsafe(audio_queue.put_nowait, bytes(indata))
+    if keyboard.is_pressed(" "):
+        loop.call_soon_threadsafe(audio_queue.put_nowait, bytes(indata))
 
 async def run_test():
-
     with sd.RawInputStream(samplerate=args.samplerate, blocksize = 4000, device=args.device, dtype='int16',
                            channels=1, callback=callback) as device:
 
         async with websockets.connect(args.uri) as websocket:
             await websocket.send('{ "config" : { "sample_rate" : %d } }' % (device.samplerate))
 
-            while True:
+            while keyboard.is_pressed(" "):
                 data = await audio_queue.get()
                 await websocket.send(data)
                 print (await websocket.recv())
-
-            await websocket.send('{"eof" : 1}')
-            print (await websocket.recv())
+            else:
+                print("else")
+                await websocket.send('{"eof" : 1}')
+                print (await websocket.recv())
+                if keyboard.is_pressed("esc"):
+                    exit
 
 async def main():
 
