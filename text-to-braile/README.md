@@ -29,5 +29,10 @@ Another thing is how do we want to go forward with this project? Should we make 
 with libloius because it's very fiddly to work with it directly. Or create some HTTP GET requests that 
 can be used to translate text to braille. 
 
-
-
+### Installing python bindings:
+- Build liblouis as normal
+- enter `liblouis/python` and run `sudo python3 setup.py install`
+NB: alternatively you can use `python3 setup.py sdist` to get a tarball you can install via `pip install` which might be more portable?
+- cython doesn't read libraries from `/usr/local/lib` by default, so run `export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib`
+trying to find an alternative to doing this manually but coming up blank. maybe figure out how to generate a portable .so file or something? we can probably just throw a bash script wrapper on our python or something but thats depressing
+- `import louis` in your python and use it as normal. docstrings are provided / readable on the liblouis gh
