@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
-#include <wctype.h>
 
 void toWideChar(const char *str, widechar *wstr) {
   int i = 0;
@@ -13,16 +12,17 @@ void toWideChar(const char *str, widechar *wstr) {
   }
   wstr[i] = L'\0';
 }
-
-int main() {
-  lou_setLogLevel(LOU_LOG_ALL);
+// args
+int main(int argc, char *argv[]) {
+  lou_setLogLevel(LOU_LOG_OFF);
   setlocale(LC_ALL, "");
   const char *tableList = "en-GB-g2.ctb";
-  const char *str = "apple";
-  widechar inbuf[100];
+  const char *str = argv[1];
+  // set the length of inbuf to the length of the string
+  widechar inbuf[strlen(str)];
   toWideChar(str, inbuf);
   int inlen = strlen(str);
-  widechar outbuf[100];
+  widechar outbuf[strlen(str) * 2];
   int outlen = 100;
   int mode = 68;
   int err = lou_translateString(tableList, inbuf, &inlen, outbuf, &outlen, NULL,
@@ -31,9 +31,9 @@ int main() {
     // error
     printf("error");
   }
-  printf("1");
-  printf("%lc\n", outbuf[0]);
-  printf("Program finished\n");
+  for (int i = 0; i < outlen; i++) {
+    printf("%lc", outbuf[i]);
+  }
   lou_free();
   return 0;
 }
