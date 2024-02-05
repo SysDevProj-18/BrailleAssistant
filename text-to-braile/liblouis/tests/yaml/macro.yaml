@@ -1,6 +1,0 @@
-# Tests that a macro can call another macro.
-display: tables/unicode.dis
-table: macro.utb
-tests:
-  - - a
-    - ⠿⠁
