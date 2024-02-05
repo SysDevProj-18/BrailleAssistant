@@ -72,6 +72,49 @@ BRAILLE_DICT = {
     "y": "⠽",
     "z": "⠵",
 
+    "á": "⠈⠁",
+    "é": "⠈⠑",
+    "í": "⠈⠊",
+    "ó": "⠈⠕",
+    "ú": "⠈⠥",
+
+    "à": "⠈⠁",
+    "è": "⠈⠑",
+    "ì": "⠈⠊",
+    "ò": "⠈⠕",
+    "ù": "⠈⠥",
+
+    "â": "⠈⠁",
+    "ê": "⠈⠑",
+    "î": "⠈⠊",
+    "ô": "⠈⠕",
+    "û": "⠈⠥",
+
+    "ä": "⠈⠁",
+    "ë": "⠈⠑",
+    "ï": "⠈⠊",
+    "ö": "⠈⠕",
+    "ü": "⠈⠥",
+
+    "ā": "⠈⠁",
+    "ē": "⠈⠑",
+    "ī": "⠈⠊",
+    "ū": "⠈⠕",
+    "ō": "⠈⠥", # consider also implementing breve, haček, Ł, å, ogonek, đ, Ħ, ș, ø, and check umlaut/diarsesis cross-handling
+
+    "ç": "⠈⠉",
+    "ñ": "⠈⠝",
+
+    ",": "⠂",
+    ";": "⠆",
+    ":": "⠒",
+    "'": "⠄",
+    "%": "⠨⠴",
+
+    ".": "⠲⠠",
+    "!": "⠖⠠", #WARNING: these three are followed by a capitalisation symbol as a stopgap solution
+    "?": "⠦⠠",
+
     "?": "?" # fallback handling
 }
 
@@ -79,6 +122,7 @@ def text_to_braille(text: str) -> str:
     global BRAILLE_DICT
 
     braille = ""
+    text = text.lower()
     while text:
         for i in BRAILLE_DICT.keys():
             if text[:len(i)] == i:
@@ -91,7 +135,7 @@ def text_to_braille(text: str) -> str:
                 braille += '?'
                 break # <- probably redundant
 
-    return braille
+    return "⠠" + braille #WARNING: first letter is autocapitalised as a stopgap solution
 
 if __name__ == "__main__":
     print(text_to_braille(' '.join(sys.argv[1:])))
