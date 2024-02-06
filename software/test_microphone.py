@@ -35,6 +35,8 @@ async def run_test():
                 text = json.loads(text)
                 if 'result' in text:
                     word = text['result'][0]['word']
+                    if word == "his":
+                        word = "is"
                     print(f'{word} -> {text_to_braille(word)}')
                     # clear audio queue (we only care about the first word)
                     while not audio_queue.empty():
