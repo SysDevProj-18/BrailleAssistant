@@ -36,9 +36,6 @@ async def run_test(websocket, file, expected_word, num_samples=1):
             print(f'{word} -> {text_to_braille(word)}')
             csv.writer(file).writerow([expected_word, word, conf])
             data_count += 1
-            if word.lower() == expected_word.lower():
-                print(f"Expected word '{expected_word}' detected.")
-                break
 
 async def main(file):
     global args
