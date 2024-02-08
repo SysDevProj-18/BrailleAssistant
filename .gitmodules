@@ -1,0 +1,3 @@
+[submodule "speech-to-text/vosk-server"]
+	path = speech-to-text/vosk-server
+	url = https://github.com/alphacep/vosk-server
