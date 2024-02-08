@@ -24,7 +24,7 @@ for file in os.listdir():
                 else:
                     expected[row[0]] = [row]
 
-fig,ax = plt.subplots()
+fig,ax = plt.subplots(figsize=(8, 8))
 ax.barh(list(expected.keys()), [len([x for x in expected[word] if x[0] != x[1]])/len(expected[word]) for word in expected.keys()])
 ax.set_xlabel('Misclassification Rate')
 ax.set_ylabel('Word')
@@ -35,7 +35,7 @@ ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
 plt.savefig('misclassification_rate.png')
 
 # new plot 
-fig,ax = plt.subplots()
+fig,ax = plt.subplots(figsize=(8, 8))
 average = {}
 for word in expected.keys():
     average[word] = sum([float(x[2]) for x in expected[word]])/len(expected[word])
