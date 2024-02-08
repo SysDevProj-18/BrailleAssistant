@@ -1,5 +1,6 @@
 # SDP Software
 To run the software, you need to have Python installed, and the following dependencies:
+- requests
 - vosk
 - websockets
 - sounddevice
