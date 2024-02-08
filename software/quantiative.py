@@ -79,6 +79,6 @@ async def main(file):
                     break
 
 if __name__ == '__main__':
-    with open('results.csv', 'w') as f:
+    with open('results.csv', 'a') as f:
         asyncio.run(main(f))
 
