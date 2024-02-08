@@ -24,6 +24,7 @@ def callback(indata, frames, time, status):
 
 async def run_test(websocket, file, expected_word, num_samples=1):
     data_count = 0
+    print(f"Pronounce the word '{expected_word}'")
     while data_count < num_samples:
         data = await audio_queue.get()
         await websocket.send(data)
