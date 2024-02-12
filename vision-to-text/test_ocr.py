@@ -1,7 +1,6 @@
 import easyocr
 import os
 
-print(os.getcwd())
 image_path = os.path.join(os.getcwd(),'images')
 os.chdir(image_path)
 reader = easyocr.Reader(['ch_sim','en'], gpu=False) # Run only once to load the model into memory.
