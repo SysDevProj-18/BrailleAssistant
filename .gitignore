@@ -5,3 +5,5 @@ model
 compile_commands.json
 # any c binary
 *.out
+venv
+__pycache__
