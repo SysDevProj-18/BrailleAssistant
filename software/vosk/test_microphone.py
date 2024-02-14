@@ -9,7 +9,7 @@ import logging
 import sounddevice as sd
 import argparse
 
-from demo1 import text_to_braille
+from braillepy import text_to_braille
 def int_or_str(text):
     """Helper function for argument parsing."""
     try:
