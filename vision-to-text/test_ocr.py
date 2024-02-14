@@ -2,6 +2,7 @@ import easyocr
 import cv2
 import os
 import keyboard
+import time
 
 LANGUAGES = ['ch_sim', 'en']
 CAM_PORT = 0
@@ -21,7 +22,13 @@ def createImageDir(img_dir):
 
 def waitForSpace(timeout):
     print("Press the space bar to scan your text.")
-    keyboard.wait(" ", timeout) # captures anyways after 30 seconds.
+    start_time = time.time()
+    while True:
+        if keyboard.is_pressed(" "):
+            break
+        elif time.time() - start_time > timeout:
+            print(f"Timeout reached! Scanning your text...")
+            break
 
 def captureImage():
     cap = cv2.VideoCapture(CAM_PORT) # Access webcam.
