@@ -14,7 +14,7 @@ TIMEOUT = 30
 def loadOcrReader(languages):
     return easyocr.Reader(languages, gpu=False)  # Run only once.
 
-# Creates webcame image directory.
+# Creates webcam image directory.
 def createImageDir(img_dir):
     image_path = os.path.join(os.getcwd(), img_dir)
     os.makedirs(image_path, exist_ok=True)
@@ -44,9 +44,8 @@ def saveImage(image_path, frame):
 
 # Read text using EasyOCR.
 def readTxt(reader, image_incl_path):
-    txt_result = reader.readtext(image_incl_path)
-    txt_lines = [line[1] for line in txt_result]
-    txt = ' '.join(txt_lines)
+    txt_result = reader.readtext(image_incl_path, detail=0)
+    txt = ' '.join(txt_result)
     print(f"Text from {image_incl_path}: {txt}")
 
 def main():
