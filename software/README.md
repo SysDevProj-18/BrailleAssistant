@@ -27,3 +27,10 @@ Afterwards you can run the client by running the following command:
 python main.py
 ```
 
+
+On the Pi 
+PyAudio has the following dependencies:
+```bash
+sudo apt install portaudio19-dev python3-pyaudio
+```
+
