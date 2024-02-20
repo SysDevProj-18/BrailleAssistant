@@ -11,6 +11,7 @@ too much development time.
 """
 
 import sys
+import re
 
 # please excuse starting a script with this wall instead of storing it separately; it should definitely be moved out for
 # production but at this stage portability is key. lots of options for encoding this later!
@@ -72,26 +73,55 @@ BRAILLE_DICT = {
     "y": "⠽",
     "z": "⠵",
 
+    "á": "⠈⠁",
+    "é": "⠈⠑",
+    "í": "⠈⠊",
+    "ó": "⠈⠕",
+    "ú": "⠈⠥",
+
+    "à": "⠈⠁",
+    "è": "⠈⠑",
+    "ì": "⠈⠊",
+    "ò": "⠈⠕",
+    "ù": "⠈⠥",
+
+    "â": "⠈⠁",
+    "ê": "⠈⠑",
+    "î": "⠈⠊",
+    "ô": "⠈⠕",
+    "û": "⠈⠥",
+
+    "ä": "⠈⠁",
+    "ë": "⠈⠑",
+    "ï": "⠈⠊",
+    "ö": "⠈⠕",
+    "ü": "⠈⠥",
+
+    "ā": "⠈⠁",
+    "ē": "⠈⠑",
+    "ī": "⠈⠊",
+    "ū": "⠈⠕",
+    "ō": "⠈⠥", # consider also implementing breve, haček, Ł, å, ogonek, đ, Ħ, ș, ø, and check umlaut/diarsesis cross-handling
+
+    "ç": "⠈⠉",
+    "ñ": "⠈⠝",
+
+    ",": "⠂",
+    ";": "⠆",
+    ":": "⠒",
+    "'": "⠄",
+    "%": "⠨⠴",
+
+    ".": "⠲⠠",
+    "!": "⠖⠠", #WARNING: these three are followed by a capitalisation symbol as a stopgap solution
+    "?": "⠦⠠",
+
     "?": "?" # fallback handling
 }
 
 def text_to_braille(text: str) -> str:
-    global BRAILLE_DICT
-
-    braille = ""
-    while text:
-        for i in BRAILLE_DICT.keys():
-            if text[:len(i)] == i:
-                text = text[len(i):]
-                braille += BRAILLE_DICT[i]
-                break
-            elif i == '?':
-                # handle no matching characters
-                text = text[1:]
-                braille += '?'
-                break # <- probably redundant
-
-    return braille
+    regex = re.compile('|'.join(map(re.escape, BRAILLE_DICT)))
+    return regex.sub(lambda match: BRAILLE_DICT[match.group(0)], text)
 
 if __name__ == "__main__":
     print(text_to_braille(' '.join(sys.argv[1:])))
