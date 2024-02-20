@@ -5,3 +5,4 @@ model
 compile_commands.json
 # any c binary
 *.out
+__pycache__
