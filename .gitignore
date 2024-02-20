@@ -1,0 +1,9 @@
+.DS_Store
+model
+.clangd
+.cache
+compile_commands.json
+# any c binary
+*.out
+__pycache__
+venv
