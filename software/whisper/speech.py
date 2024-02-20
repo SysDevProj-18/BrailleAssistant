@@ -33,10 +33,9 @@ class SpeechRecognition:
         time_start = time.time()
         segments, info = self.audio_model.transcribe(audio_data)
         time_end = time.time()
-        print(f"Time taken: {time_end - time_start}, audio length: {len(audio_data) / 16000}")
         for segment in segments:
             predicted_text += segment.text
-        self.result_queue.put_nowait(predicted_text)
+        self.result_queue.put_nowait((predicted_text, (time_end - time_start) if self.log_time else None))
     def __transcribe_loop(self):
         while True:
             self.__transcribe()
