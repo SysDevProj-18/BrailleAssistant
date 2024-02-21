@@ -116,7 +116,7 @@ BRAILLE_DICT = {
     "!": "⠖⠠", #WARNING: these three are followed by a capitalisation symbol as a stopgap solution
     "?": "⠦⠠",
 
-    "?": "?" # fallback handling
+    "#": "#" # fallback handling
 }
 
 def text_to_braille(text: str) -> str:
