@@ -1,4 +1,7 @@
 ---
+import '@/styles/globals.css'
+import Navbar from '../components/nav-bar'
+import WritingText from '../components/text-animation'
 
 ---
 
@@ -8,9 +11,15 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>BrailleEd</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+    <Navbar />
+    TODO: Add braille background
+    <main class="flex flex-col justify-center h-screen">
+      <div class="flex justify-center">
+      <WritingText text="BrailleEd" client:load/>
+        </div>
+    </main>
 	</body>
 </html>
