@@ -1,63 +1,89 @@
 from enum import IntEnum, Enum
+from Braille import HalfCell, BRAILLE_DICT
+
+
+Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
 
 
 class BrailleDisplay:
     NUM_CELLS = 8
 
     class BrailleCell:
-        WHEEL_STATES = 8  # number of positions a wheel can be in
-
-        class Direction(IntEnum):
-            UP = 1
-            DOWN = -1
-
-        Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
-
         def __init__(self):
-            self._l_wheel_pos = 0  # set initial positions of left and right wheels
-            self._r_wheel_pos = 0
+            self._l_wheel_pos = HalfCell.NO_DOT
+            self._r_wheel_pos = HalfCell.NO_DOT
 
-        def display(self, braille: str):
+        def display(self, text: str):
             """
             Displays a single braille character on the cell.
             @param braille: The character to be displayed.
             """
 
-            raise NotImplementedError
+            for char in text:
+                if char not in BRAILLE_DICT:
+                    raise ValueError("Invalid braille character: " + char)
+                else:
+                    l_wheel, r_wheel = BRAILLE_DICT[char]
+                    self._rotate(Wheel.LEFT, l_wheel)
+                    self._rotate(Wheel.RIGHT, r_wheel)
 
-        def _rotate(self, wheel: Wheel, direction: Direction):
+        def _rotate(self, wheel: Wheel, half_cell: HalfCell):
             """
             Rotates one of the two wheels that comprise the display cell.
             @param wheel: Either Wheel.LEFT or Wheel.RIGHT
             @param direction: Either Direction.UP or Direction.DOWN
             """
+            # some GPIO magic here
+            if self.get_pos(wheel) == half_cell:
+                # no need to rotate
+               pass 
+            elif self.get_pos(wheel) < half_cell:
+                # rotate down
+                # DIRECTION_DOWN
+                # GPIO Magic
+               pass 
+            else:
+                # rotate up
+                # DIRECTION_UP
+                # GPIO Magic
+               pass 
+            if wheel == Wheel.LEFT:
+                self._l_wheel_pos = half_cell
+            else:
+                self._r_wheel_pos = half_cell
 
-            raise NotImplementedError
+        def get_pos(self, wheel: Wheel) -> HalfCell:
+            """
+            Returns the current position of the specified wheel.
+            @param wheel: Either Wheel.LEFT or Wheel.RIGHT
+            @return: The current position of the wheel.
+            """
+            return self._l_wheel_pos if wheel == Wheel.LEFT else self._r_wheel_pos
 
     def __init__(self):
         self.cells = [self.BrailleCell() for _ in range(self.NUM_CELLS)]
 
     def __enter__(self):
         # No point clearing unless we can detect initial positions of the wheels
-        pass
+        return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         # Ensure clear on exit to prevent misaligned wheels on future launch
         self.clear()
 
-    def display(self, braille: str):
-        if len(braille) > self.NUM_CELLS:
+    def display(self, text: str):
+        if len(text) > self.NUM_CELLS:
             # TODO: handle braille longer than display
-            raise ValueError("Braille string too long for display: " + braille)
+            raise ValueError("Braille string too long for display: " + text)
         else:
-            braille += "⠀" * (self.NUM_CELLS - len(braille))  # pad string with empty braille character
-            for i in range(self.NUM_CELLS):
-                self.cells[i].display(braille[i])
+            for i in range(0, len(text)):
+                self.cells[i].display(text[i])
+                print(f'Cell {i} displayed {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
 
     def clear(self):
-        self.display("⠀" * self.NUM_CELLS)
+        self.display(" " * self.NUM_CELLS)
 
 
 if __name__ == "__main__":
     with BrailleDisplay() as d:
-        d.display("⠁⠏⠏⠇⠑")
+        d.display("apple")
