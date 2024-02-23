@@ -5,7 +5,7 @@ def text_to_braille(text, contracted):
     return [text, contracted]
 
 def speech_to_text():
-    return ""
+    return "<speech>"
 
 def activate_display(braille):
     print(f"activate_display({braille})")
@@ -45,7 +45,7 @@ class Main:
 
     
     def __split_into_pages(self, braille):
-        pass
+        return [f"__split_into_pages({braille})"] # TODO
 
     def __activate_display(self):
         activate_display(self.__display_text_contracted if self.__use_contracted_braille else self.__display_text_uncontracted)
