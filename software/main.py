@@ -2,6 +2,7 @@ from sshkeyboard import listen_keyboard
 from Braille import HalfCell, BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
 
+
 ## DUMMY ##
 def text_to_braille(text: str, contracted: bool) -> "list[tuple[HalfCell]]":
     return [BRAILLE_DICT[c] for c in text] # TODO
@@ -21,7 +22,8 @@ def volume_down():
 ## /DUMMY ##
 
 # Constants / config
-REGULAR_KEYS = ["space"] + list("qwertyuiopasdfghjklzxcvbnm0123456789.:,;!?'\"(){}[]/\\-")
+REGULAR_KEYS = list("qwertyuiopasdfghjklzxcvbnm0123456789.:,;!?'\"(){}[]/\\-")
+KEY_SPACE = "space"
 KEY_BACKSPACE_TEXT_ENTRY = "backspace"
 KEY_CLEAR_TEXT_ENTRY = "delete"
 KEY_SUBMIT_TEXT_ENTRY = "enter"
@@ -77,10 +79,60 @@ class Main:
         self.__activate_display()
 
     
-    def __split_into_pages(self, braille: "list[tuple[HalfCell]]"):
-        return [braille] # TODO
+    def __split_into_words(self, to_split: "list[tuple[HalfCell]]"):
+        words = []
+        current_word = []
+        for cell in to_split:
+            if cell == BRAILLE_SPACE:
+                if current_word != []:
+                    words.append(current_word)
+                    current_word = []
+            else:
+                current_word.append(cell)
+        words.append(current_word) # final word
+
+        return words
+
+
+    def __split_into_pages(self, to_split: "list[tuple[HalfCell]]"):
+        print(f"splitting {to_split} into pages...")
+        words = self.__split_into_words(to_split)
+        print(f"...words are {words}...")
+
+        if words == [[]]:
+            print(f"...no words; returning empty page [[]].")
+            return [[]]
+        
+
+        pages = []
+        current_page = []
+
+        for word in words:
+            if len(current_page) == 0 and len(word) <= DISPLAY_SIZE:
+                current_page += word # no need for space at start
+            elif len(current_page) + 1 + len(word) <= DISPLAY_SIZE: # can fit on existing page
+                current_page.append(BRAILLE_SPACE)
+                current_page += word
+            else:
+                pages.append(current_page) # page finished
+                if len(word) <= DISPLAY_SIZE:
+                    current_page = word # word goes to start of next page
+                else: # we have to split the word up
+                    new_pages = []
+                    for i in range(0, len(word), DISPLAY_SIZE):
+                        new_pages.append(word[i:i+DISPLAY_SIZE])
+                    pages += new_pages[:-1] # add whole pages for parts of the word
+                    current_page = new_pages[-1] # final part can go on start of next page
+        
+        if current_page != []:
+            pages.append(current_page) # final page
+        
+        print(f"...pages are {pages}.")
+
+        return pages
 
     def __activate_display(self):
+        print(f"activating display with page {self.__current_display_page} of {self.__current_display_braille()}")
         self.__braille_display.display(self.__current_display_braille()[self.__current_display_page])
 
 
@@ -92,6 +144,8 @@ class Main:
 
         if key in REGULAR_KEYS:
             self.__keyboard_entry_text += key
+        if key == KEY_SPACE:
+            self.__keyboard_entry_text += " "
         elif key == KEY_SUBMIT_TEXT_ENTRY:
             self.__set_display_text(self.__keyboard_entry_text)
             self.__keyboard_entry_text = ""

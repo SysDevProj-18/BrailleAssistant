@@ -7,7 +7,7 @@ Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
 
 
 class BrailleDisplay:
-    NUM_CELLS = 8
+    NUM_CELLS = 10 # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
         def __init__(self):
@@ -79,9 +79,12 @@ class BrailleDisplay:
             for i in range(0, len(braille)):
                 self.cells[i].display(braille[i])
                 print(f'Cell {i} displayed {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
+            for i in range(len(braille), self.NUM_CELLS):
+                self.cells[i].display((HalfCell.NO_DOT, HalfCell.NO_DOT))
+                print(f'Cell {i} blanked to {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
 
     def clear(self):
-        self.display([(HalfCell.NO_DOT, HalfCell.NO_DOT)]* self.NUM_CELLS)
+        self.display([])
 
 
 if __name__ == "__main__":
