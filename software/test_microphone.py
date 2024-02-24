@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import json
-import os
-import sys
 import asyncio
 import websockets
 import logging
@@ -34,11 +32,9 @@ async def run_test():
                 text = (await websocket.recv())
                 text = json.loads(text)
                 if 'result' in text:
-                    word = text['result'][0]['word']
-                    print(f'{word} -> {text_to_braille(word)}')
-                    # clear audio queue (we only care about the first word)
-                    while not audio_queue.empty():
-                        audio_queue.get_nowait()
+                    text_line = text['text']
+                    braille_output = text_to_braille(text_line)
+                    return braille_output # Braille string output until pause detected.
 async def main():
 
     global args
