@@ -1,7 +1,9 @@
 ---
 import "@/styles/globals.css";
-import Navbar from "../components/nav-bar";
 import { TypewriterEffect } from "@/components/typewriter-effect";
+import { StickyScroll } from "@/components/sticky-scroll-reveal";
+import NavBar from "@/components/nav-bar.astro";
+import { Button } from "@/components/ui/button";
 const words = [
   {
     text: "Revolutionise",
@@ -17,8 +19,23 @@ const words = [
   },
   {
     text: "BrailleEd",
-    className: "text-blue-500 dark:text-blue-500",
+    className: "text-blue-500 dark:text-blue-500 underline",
   },
+];
+const content = [
+  {
+    title: "Some Problem",
+    description:
+      "How we solve the problem. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },{
+    title: "Some Problem",
+    description:
+      "How we solve the problem. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },{
+    title: "Some Problem",
+    description:
+      "How we solve the problem. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  }
 ];
 ---
 
@@ -31,10 +48,10 @@ const words = [
     <title>BrailleEd</title>
   </head>
   <body>
-    <Navbar />
+    <NavBar />
     {/* Radial gradient for the container to give a faded look */}
     <main
-      class="h-[50rem] w-full dark:bg-black bg-white dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center"
+      class="h-[55rem] w-full dark:bg-black bg-white dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex flex-col items-center justify-center"
     >
       {/* Radial gradient for the container to give a faded look */}
       <div
@@ -42,10 +59,15 @@ const words = [
       >
       </div>
       <p
-        class="text-4xl sm:text-7xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-8"
+        class="text-4xl sm:text-7xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-4"
       >
       <TypewriterEffect words={words} client:load />
       </p>
     </main>
+
+    <section class="h-[40rem]">
+
+      <StickyScroll content={content} client:load/>
+    </section>
   </body>
 </html>

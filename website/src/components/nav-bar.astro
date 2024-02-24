@@ -1,0 +1,15 @@
+---
+import { Image } from "astro:assets";
+import Logo from "../assets/Logo.png";
+---
+
+<header class="sticky flex items-center gap-x-20 top-0 border-b border-border/40 px-12 py-2">
+  <div>
+    <Image src={Logo} alt="A bird sitting on a nest of eggs." 
+    width={200}
+    height={200}
+    />
+  </div>
+
+  <div>Links</div>
+</header>
