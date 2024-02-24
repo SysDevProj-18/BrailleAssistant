@@ -13,19 +13,15 @@ class BrailleDisplay:
             self._l_wheel_pos = HalfCell.NO_DOT
             self._r_wheel_pos = HalfCell.NO_DOT
 
-        def display(self, text: str):
+        def display(self, cell: "tuple[HalfCell, HalfCell]"):
             """
             Displays a single braille character on the cell.
             @param braille: The character to be displayed.
             """
-
-            for char in text:
-                if char not in BRAILLE_DICT:
-                    raise ValueError("Invalid braille character: " + char)
-                else:
-                    l_wheel, r_wheel = BRAILLE_DICT[char]
-                    self._rotate(Wheel.LEFT, l_wheel)
-                    self._rotate(Wheel.RIGHT, r_wheel)
+            
+            l_wheel, r_wheel = cell
+            self._rotate(Wheel.LEFT, l_wheel)
+            self._rotate(Wheel.RIGHT, r_wheel)
 
         def _rotate(self, wheel: Wheel, half_cell: HalfCell):
             """
@@ -71,17 +67,17 @@ class BrailleDisplay:
         # Ensure clear on exit to prevent misaligned wheels on future launch
         self.clear()
 
-    def display(self, text: str):
-        if len(text) > self.NUM_CELLS:
+    def display(self, braille: "list[tuple[HalfCell, HalfCell]]"):
+        if len(braille) > self.NUM_CELLS:
             # TODO: handle braille longer than display
-            raise ValueError("Braille string too long for display: " + text)
+            raise ValueError(f"Braille string too long for display: {braille}")
         else:
-            for i in range(0, len(text)):
-                self.cells[i].display(text[i])
+            for i in range(0, len(braille)):
+                self.cells[i].display(braille[i])
                 print(f'Cell {i} displayed {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
 
     def clear(self):
-        self.display(" " * self.NUM_CELLS)
+        self.display([(HalfCell.NO_DOT, HalfCell.NO_DOT)]* self.NUM_CELLS)
 
 
 if __name__ == "__main__":

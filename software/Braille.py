@@ -12,7 +12,7 @@ class HalfCell(IntEnum):
     ALL_DOTS = 7
 
 
-BRAILLE_DICT: dict[str, tuple[HalfCell, HalfCell]] = {
+BRAILLE_DICT: "dict[str, tuple[HalfCell, HalfCell]]" = {
     " ": (HalfCell.NO_DOT, HalfCell.NO_DOT),
     "a": (HalfCell.TOP_DOT, HalfCell.NO_DOT),
     "b": (HalfCell.TOP_MIDDLE_DOT, HalfCell.NO_DOT),
