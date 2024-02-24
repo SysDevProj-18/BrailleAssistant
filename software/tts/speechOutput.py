@@ -20,19 +20,20 @@ class SpeechOutput():
 
     def speechEngine(self, text):
 
-        self.engine = pyttsx3.init()
-
         try:
 
             self.engine.endLoop()
             del self.engine
-            self.engine = pyttsx3.init()
 
         except:
 
             pass
-            self.engine.startLoop()
-            self.engine.say(text)
+
+        self.engine = pyttsx3.init()
+        self.engine.setProperty("rate", self.rate)
+        self.engine.setProperty("volume", self.volume)
+        self.engine.startLoop()
+        self.engine.say(text)
 
     def loop(self):
 
