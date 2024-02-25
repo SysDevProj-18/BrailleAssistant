@@ -34,11 +34,13 @@ class Table:
         self.file = file  # A filename is used instead of a grade indicator to improve multi-language support.
         self.rules = {
             "pretrans": [],  # rules that translate text to text (replace)
-            "priority": [],  # always rules and the like that must precede translation
+            "urgent": [],  # always rules and the like that must precede translation
+            "early": [],  # context dependent rules that need most of the string intact
             "pass1": [],  # first pass rules
             "pass2": [],  # second pass rules
             "pass3": [],  # third pass rules
-            "pass4": []   # fourth pass rules
+            "pass4": [],  # fourth pass rules
+            "charrules": []   # individual character translation rules; use at end
         }
         self.chargroups = {
             "space": [],
@@ -86,7 +88,7 @@ class Table:
             # character-definition opcodes
             case "space" | "punctuation" | "digit" | "letter" | "lowercase" | "uppercase" | "sign" | "math":
                 self.chargroups[tokens[0]] += tokens[1]
-                self.rules["pass1"] += CharacterRule(tokens[1], dots_to_braille(tokens[2]))
+                self.rules["charrules"] += CharacterRule(tokens[1], dots_to_braille(tokens[2]))
             case "base":  # hacky solution for characters based on another character
                 self.chargroups[tokens[1]] += tokens[2]
                 self.rules["pretrans"] += PretransRule(tokens[2], tokens[3])  # FIXME (?): indicators for base opcode
@@ -152,14 +154,44 @@ class Table:
             case "correct":
                 self.rules["pretrans"] += PretransRule(tokens[1], tokens[2])
 
-
             # translation opcodes
-            case "after":
-                ...
-            case "before":
-                ...
             case "always":
-                self.rules["priority"] += MapRule(tokens[1], dots_to_braille(tokens[2]))
+                self.rules["urgent"] += MapRule(tokens[1], dots_to_braille(tokens[2]))
+
+            case "word":  # match if surrounded by whitespace / punctuation (only space and period for our use case)
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s])", dots_to_braille(tokens[2]))
+            case "joinword":
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"[\.\s](?=\w)", dots_to_braille(tokens[2]))
+            case "lowword":
+                self.rules["early"] += MapRule(r"(?<=\s)" + tokens[1] + r"(?=\s)", dots_to_braille(tokens[2]))
+            case "sufword":
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s\w])", dots_to_braille(tokens[2]))
+            case "prfword":
+                self.rules["early"] += MapRule(r"(?<=[\.\s\w])" + tokens[1] + r"(?=[\.\s])", dots_to_braille(tokens[2]))
+            case "begword":
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"(?=\w)", dots_to_braille(tokens[2]))
+            case "begmidword":
+                self.rules["early"] += MapRule(r"(?<=[\.\s\w])" + tokens[1] + r"(?=\w)", dots_to_braille(tokens[2]))
+            case "midword":
+                self.rules["early"] += MapRule(r"(?<=\w)" + tokens[1] + r"(?=\w)", dots_to_braille(tokens[2]))
+            case "midendword":
+                self.rules["early"] += MapRule(r"(?<=\w)" + tokens[1] + r"(?=[\.\s\w])", dots_to_braille(tokens[2]))
+            case "endword":
+                self.rules["early"] += MapRule(r"(?<=\w)" + tokens[1] + r"(?=[\s\.])", dots_to_braille(tokens[2]))
+            case "partword":
+                self.rules["early"] += MapRule(r"((?<=\w)" + tokens[1] + "|" + tokens[1] + r"(?=\w))",
+                                               dots_to_braille(tokens[2]))
+            case "prepunc":
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"(?=[\.]*\w)", dots_to_braille(tokens[2]))
+            case "postpunc":
+                self.rules["early"] += MapRule(r"(?<=\w[\.]*)" + tokens[1] + r"(?=[\.\s])", dots_to_braille(tokens[2]))
+            case "begnum":
+                self.rules["early"] += MapRule(r"(?<=[\.\s])" + tokens[1] + r"(?=\d)", dots_to_braille(tokens[2]))
+            case "midnum":
+                self.rules["early"] += MapRule(r"(?<=\d)" + tokens[1] + r"(?=\d)", dots_to_braille(tokens[2]))
+            case "endnum":
+                self.rules["early"] += MapRule(r"(?<=\d)" + tokens[1] + r"(?=[\.\s])", dots_to_braille(tokens[2]))
+
 
 
             # context and multipass opcodes
@@ -185,7 +217,7 @@ class Table:
                  "midendnumericmodechars" | "emphclass" | "begemph" | "endemph" | "noemphchars" | "emphletter" | \
                  "begemphword" | "endemphword" | "emphmodechars" | "begemphphrase" | "endemphphrase" | \
                  "lenemphphrase" | "begcomp" | "endcomp" | "capsnocont" | "replace" | "repeated" | "repword" | \
-                 "rependword":
+                 "rependword" | "syllable" | "contraction" | "exactdots" | "joinnum" | "after" | "before":
                 logging.warning(f"Unimplemented opcode {tokens[0]} used in table {self.file}")
 
     def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
