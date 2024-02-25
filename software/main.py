@@ -1,6 +1,8 @@
 from sshkeyboard import listen_keyboard
 from Braille import HalfCell, BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
+from speech_recogniser import SpeechRecogniser
+import asyncio
 
 
 ## DUMMY ##
@@ -8,7 +10,9 @@ def text_to_braille(text: str, contracted: bool) -> "list[tuple[HalfCell]]":
     return [BRAILLE_DICT[c] for c in text] # TODO
 
 def speech_to_text(): 
-    return "speech" # TODO
+    sr = SpeechRecogniser()
+    text = asyncio.run(sr.listen())
+    return text
 
 def text_to_speech(str):
     print(f"text_to_speech({str})") # TODO
