@@ -13,12 +13,12 @@ class SpeechOutput():
         self.rate = 200   # default is 200 wpm
         self.__request_thread_stop = False
         
-    def __open__(self):
+    def __enter__(self):
         self.__speech_thread = threading.Thread(target=self.__run)
         self.__speech_thread.start()
 
     
-    def __close__(self):
+    def __exit__(self):
         self.__request_thread_stop = True
 
 
