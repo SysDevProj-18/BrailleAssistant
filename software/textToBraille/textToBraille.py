@@ -9,13 +9,6 @@ HalfCell = Braille.HalfCell  # FIXME: figure out relative imports
 DEFAULT_TABLE = "tables/en-ueb-g2.ctb"
 
 
-def _translate_escapes(text: str) -> str:
-    """
-    TODO: Translates escape sequences in a string from the liblouis table format to the intended character.
-    """
-    raise NotImplementedError
-
-
 class Table:
     """
     A class representing a (compiled) Braille translation table.
@@ -62,6 +55,7 @@ class Table:
         self.indicators = {
             "undefined": "?"
         }
+        self.variables = [0] * 50
         self._compile()
 
     def _compile(self):
@@ -183,11 +177,11 @@ class Table:
 
 
 
-            # context and multipass opcodes
-            case "context":
-                self.rules["pass1"] += LouisRule(tokens[1], tokens[2])
-            case "pass2" | "pass3" | "pass4":
-                self.rules[tokens[0]] += LouisRule(tokens[1], tokens[2])
+            # context and multipass opcodes  (DEPRECATED!!)
+            #case "context":
+            #    self.rules["pass1"] += LouisRule(tokens[1], tokens[2])
+            #case "pass2" | "pass3" | "pass4":
+            #    self.rules[tokens[0]] += LouisRule(tokens[1], tokens[2])
 
             # match opcode
             case "match":
@@ -207,48 +201,54 @@ class Table:
                  "begemphword" | "endemphword" | "emphmodechars" | "begemphphrase" | "endemphphrase" | \
                  "lenemphphrase" | "begcomp" | "endcomp" | "capsnocont" | "replace" | "repeated" | "repword" | \
                  "rependword" | "syllable" | "contraction" | "exactdots" | "joinnum" | "after" | "before" | \
-                 "seqdelimiter" | "seqbeforechars" | "seqafterchars" | "seqafterpattern":
+                 "seqdelimiter" | "seqbeforechars" | "seqafterchars" | "seqafterpattern" | \
+                 "context" | "pass2" | "pass3" | "pass4":  # <- deprecated opcodes using liblouis subop syntax (OoS)
                 logging.warning(f"Unimplemented opcode {tokens[0]} used in table {self.file}")
 
     def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
         # pretranslation step
         if self.rules["pretrans"]:
             for rule in self.rules["pretrans"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
 
         # slight deviation from liblouis translation; handle priority rules before any passes
         if self.rules["urgent"]:
             for rule in self.rules["urgent"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
 
         if self.rules["early"]:
             for rule in self.rules["early"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
 
         # first pass
         if self.rules["pass1"]:
             for rule in self.rules["pass1"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
+        # reset variables between passes
+        self.variables = [0] * 50
 
         # second pass
         if self.rules["pass2"]:
             for rule in self.rules["pass2"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
+        self.variables = [0] * 50
 
         # third pass
         if self.rules["pass3"]:
             for rule in self.rules["pass3"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
+        self.variables = [0] * 50
 
         # fourth pass
         if self.rules["pass4"]:
             for rule in self.rules["pass4"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
+        self.variables = [0] * 50
 
         # translate any remaining untranslated characters
         if self.rules["charrules"]:
             for rule in self.rules["charrules"]:
-                text = rule(text, self.chargroups)
+                text, self.variables = rule(text, self.chargroups, self.variables)
 
         # handle decpoint and hyphen
         if self.specialsymbols["decpoint"][0] in text:
@@ -261,3 +261,24 @@ class Table:
 
         # translate to HalfCells and return
         return braille_to_halfcells(text)
+
+
+# Used in _translate_escapes to convert a few Liblouis escape sequences missing from python to intended characters.
+# Format is best understood as the first two arguments to re.sub
+_escapes = [
+    (re.compile(r"\\s"), " "),
+    (re.compile(r"\\e"), "\x1B"),
+    (re.compile(r"\\x...."), lambda m: chr(int(m.groups(0)[-4:], 16))),
+    (re.compile(r"\\y....."), lambda m: chr(int(m.groups(0)[-5:], 16))),
+    (re.compile(r"\\z........"), lambda m: chr(int(m.groups(0)[-8:], 16)))
+]
+
+
+def _translate_escapes(text: str) -> str:
+    """
+    Translates escape sequences in a string from the liblouis table format to the intended character.
+    """
+    for e in _escapes:
+        text = re.sub(*e, text)
+
+    return text
