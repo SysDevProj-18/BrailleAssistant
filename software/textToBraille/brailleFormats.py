@@ -43,3 +43,9 @@ def braille_to_halfcells(braille: str) -> list[tuple[HalfCell, HalfCell]]:
     TODO: Translates braille text characters to HalfCells. Used for final display.
     """
     raise NotImplementedError
+
+def is_braille(text: str) -> bool:
+    """
+    TODO: Returns true if text contains only braille representation characters. Returns false otherwise.
+    """
+    raise NotImplementedError
