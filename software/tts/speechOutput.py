@@ -28,7 +28,7 @@ class SpeechOutput():
     def setRate(self, rate):
         self.rate = rate
 
-    def __run(self, text):
+    def __run(self):
         while not self.__request_thread_stop:
             if not self.queue.empty():
                 text = self.queue.get()
@@ -40,7 +40,6 @@ class SpeechOutput():
 
 
     def speak(self, text):
-
         self.queue.put(text)
 
 if __name__ == "__main__":
