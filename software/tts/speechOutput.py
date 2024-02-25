@@ -27,11 +27,11 @@ class SpeechOutput:
         self.rate = rate
 
     def __run(self):
+        self.engine.runAndWait()
         while not self.__request_thread_stop:
             if not self.queue.empty():
                 text = self.queue.get()
                 self.engine.say(text)
-                self.engine.runAndWait()
             time.sleep(0.01)
 
     def speak(self, text):
