@@ -2,6 +2,7 @@ from sshkeyboard import listen_keyboard
 from Braille import HalfCell, BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
 from speech_recogniser import SpeechRecogniser
+from tts.speechOutput import SpeechOutput
 import asyncio
 
 
@@ -13,9 +14,6 @@ def speech_to_text():
     sr = SpeechRecogniser()
     text = asyncio.run(sr.listen())
     return text
-
-def text_to_speech(str):
-    print(f"text_to_speech({str})") # TODO
 
 def volume_up():
     print("volume_up()") # TODO
@@ -47,7 +45,7 @@ BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
 
 class Main:
     
-    def __init__(self, braille_display):
+    def __init__(self, braille_display, text_to_speech):
         self.__keyboard_entry_text = ""
         self.__display_text_alpha = ""
         self.__display_text_contracted = [[]]
@@ -59,10 +57,11 @@ class Main:
         self.__current_display_page = 0
 
         self.__braille_display = braille_display
+        self.__text_to_speech = text_to_speech
 
         
 
-    def listen(self):
+    def run(self):
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
 
     
@@ -144,7 +143,7 @@ class Main:
         print(f"'{key}' pressed")
 
         if self.__speak_keypresses:
-            text_to_speech(key)
+            self.__text_to_speech.speak(key)
 
         if key in REGULAR_KEYS:
             self.__keyboard_entry_text += key
@@ -162,7 +161,7 @@ class Main:
         elif key == KEY_SPEAK_KEYPRESS_OFF:
             self.__speak_keypresses = False
         elif key == KEY_SPEAK_STORED:
-            text_to_speech(self.__display_text_alpha)
+            self.__text_to_speech.speak(self.__display_text_alpha)
         elif key == KEY_MICROPHONE:
             self.__set_display_text(speech_to_text())
         elif key == KEY_PREVIOUS_PAGE:
@@ -193,7 +192,7 @@ class Main:
 
 if __name__ == "__main__":
     try:
-        with BrailleDisplay() as display:
-            Main(display).listen()
+        with BrailleDisplay() as display, SpeechOutput() as tts:
+            Main(display, tts).run()
     except KeyboardInterrupt:
         print("exiting")
