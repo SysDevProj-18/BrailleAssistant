@@ -182,9 +182,6 @@ class Main:
         elif key == KEY_VOLUME_UP:
             volume_up()
 
-
-
-
     def __on_release(self, key):
         pass # TEMP
 

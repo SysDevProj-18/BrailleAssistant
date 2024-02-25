@@ -48,6 +48,7 @@ class SpeechOutput():
 
         self.queue.put(text)
 
-tts = SpeechOutput()
-tts.speak("Hello")
-tts.loop()
+if __name__ == "__main__":
+    tts = SpeechOutput()
+    tts.speak("Hello")
+    tts.loop()
