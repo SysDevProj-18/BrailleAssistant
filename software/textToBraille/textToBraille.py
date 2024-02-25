@@ -40,7 +40,7 @@ class Table:
             "pass2": [],  # second pass rules
             "pass3": [],  # third pass rules
             "pass4": [],  # fourth pass rules
-            "charrules": []   # individual character translation rules; use at end
+            "charrules": []   # individual character translation rules; used at end
         }
         self.chargroups = {
             "space": [],
@@ -53,8 +53,7 @@ class Table:
             "math": [],
             "_CAPSMODE": [],
             "_NUMMODE": [],
-            "_NUMNOCONT": [],
-            "_SEQDELIMITER": []
+            "_NUMNOCONT": []
         }
         self.specialsymbols = {
             "decpoint": ("",""),
@@ -93,7 +92,7 @@ class Table:
                 self.chargroups[tokens[1]] += tokens[2]
                 self.rules["pretrans"] += PretransRule(tokens[2], tokens[3])  # FIXME (?): indicators for base opcode
             case "attribute":
-                if tokens[1] in self.chargroups.keys:
+                if tokens[1] in self.chargroups.keys():
                     self.chargroups[tokens[1]] += tokens[2]
                 else:
                     self.chargroups[tokens[1]] = [tokens[2]]  # handle creation of new character class
@@ -133,16 +132,6 @@ class Table:
                 self.chargroups["_NUMNOCONT"] += tokens[1].split()
             case "numericmodechars":
                 self.chargroups["_NUMMODE"] += tokens[1].split()
-
-            # operators for UEB "Standing Alone" sequences
-            case "seqdelimiter":
-                ...
-            case "seqbeforechars":
-                ...
-            case "seqafterchars":
-                ...
-            case "seqafterpattern":
-                ...
 
             # special symbol opcodes
             case "decpoint":
@@ -217,7 +206,8 @@ class Table:
                  "midendnumericmodechars" | "emphclass" | "begemph" | "endemph" | "noemphchars" | "emphletter" | \
                  "begemphword" | "endemphword" | "emphmodechars" | "begemphphrase" | "endemphphrase" | \
                  "lenemphphrase" | "begcomp" | "endcomp" | "capsnocont" | "replace" | "repeated" | "repword" | \
-                 "rependword" | "syllable" | "contraction" | "exactdots" | "joinnum" | "after" | "before":
+                 "rependword" | "syllable" | "contraction" | "exactdots" | "joinnum" | "after" | "before" | \
+                 "seqdelimiter" | "seqbeforechars" | "seqafterchars" | "seqafterpattern":
                 logging.warning(f"Unimplemented opcode {tokens[0]} used in table {self.file}")
 
     def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
@@ -227,8 +217,12 @@ class Table:
                 text = rule(text, self.chargroups)
 
         # slight deviation from liblouis translation; handle priority rules before any passes
-        if self.rules["priority"]:
-            for rule in self.rules["priority"]:
+        if self.rules["urgent"]:
+            for rule in self.rules["urgent"]:
+                text = rule(text, self.chargroups)
+
+        if self.rules["early"]:
+            for rule in self.rules["early"]:
                 text = rule(text, self.chargroups)
 
         # first pass
@@ -250,6 +244,17 @@ class Table:
         if self.rules["pass4"]:
             for rule in self.rules["pass4"]:
                 text = rule(text, self.chargroups)
+
+        # translate any remaining untranslated characters
+        if self.rules["charrules"]:
+            for rule in self.rules["charrules"]:
+                text = rule(text, self.chargroups)
+
+        # handle decpoint and hyphen
+        if self.specialsymbols["decpoint"][0] in text:
+            text = re.sub(*self.specialsymbols["decpoint"], text)
+        if self.specialsymbols["hyphen"][0] in text:
+            text = re.sub(*self.specialsymbols["hyphen"], text)
 
         # clean up any missed characters using undefined character from tables
         text = ''.join(c if is_braille(c) else self.indicators["undefined"] for c in text)

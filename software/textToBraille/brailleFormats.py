@@ -31,21 +31,159 @@ def _dots_to_halfcells(dots: str) -> tuple[HalfCell, HalfCell]:
     return halftable[left_half], halftable[right_half]
 
 
+_dt2br: dict[str, str] = {
+    "0": '⠀',
+    "1": '⠁',
+    "2": '⠂',
+    "12": '⠃',
+    "3": '⠄',
+    "13": '⠅',
+    "23": '⠆',
+    "123": '⠇',
+    "4": '⠈',
+    "14": '⠉',
+    "24": '⠊',
+    "124": '⠋',
+    "34": '⠌',
+    "134": '⠍',
+    "234": '⠎',
+    "1234": '⠏',
+    "5": '⠐',
+    "15": '⠑',
+    "25": '⠒',
+    "125": '⠓',
+    "35": '⠔',
+    "135": '⠕',
+    "235": '⠖',
+    "1235": '⠗',
+    "45": '⠘',
+    "145": '⠙',
+    "245": '⠚',
+    "1245": '⠛',
+    "345": '⠜',
+    "1345": '⠝',
+    "2345": '⠞',
+    "12345": '⠟',
+    "6": '⠠',
+    "16": '⠡',
+    "26": '⠢',
+    "126": '⠣',
+    "36": '⠤',
+    "136": '⠥',
+    "236": '⠦',
+    "1236": '⠧',
+    "46": '⠨',
+    "146": '⠩',
+    "246": '⠪',
+    "1246": '⠫',
+    "346": '⠬',
+    "1346": '⠭',
+    "2346": '⠮',
+    "12346": '⠯',
+    "56": '⠰',
+    "156": '⠱',
+    "256": '⠲',
+    "1256": '⠳',
+    "356": '⠴',
+    "1356": '⠵',
+    "2356": '⠶',
+    "12356": '⠷',
+    "456": '⠸',
+    "1456": '⠹',
+    "2456": '⠺',
+    "12456": '⠻',
+    "3456": '⠼',
+    "13456": '⠽',
+    "23456": '⠾',
+    "123456": '⠿'
+}
+
+
 def dots_to_braille(dots: str) -> str:
     """
-    TODO: Translates liblouis dot sequences to braille text characters. Used for translation.
+    Translates liblouis dot sequences to braille text characters. Used for translation. Cells should be seperated by -
     """
-    raise NotImplementedError
+    return ''.join(_dt2br[c] for c in '-'.split(dots))
+
+
+_br2hc: dict[str, tuple[HalfCell, HalfCell]] = {
+    '⠀': (HalfCell.NO_DOT, HalfCell.NO_DOT),
+    '⠁': (HalfCell.TOP_DOT, HalfCell.NO_DOT),
+    '⠂': (HalfCell.MIDDLE_DOT, HalfCell.NO_DOT),
+    '⠃': (HalfCell.TOP_MIDDLE_DOT, HalfCell.NO_DOT),
+    '⠄': (HalfCell.BOTTOM_DOT, HalfCell.NO_DOT),
+    '⠅': (HalfCell.TOP_BOTTOM_DOT, HalfCell.NO_DOT),
+    '⠆': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.NO_DOT),
+    '⠇': (HalfCell.ALL_DOTS, HalfCell.NO_DOT),
+    '⠈': (HalfCell.NO_DOT, HalfCell.TOP_DOT),
+    '⠉': (HalfCell.TOP_DOT, HalfCell.TOP_DOT),
+    '⠊': (HalfCell.MIDDLE_DOT, HalfCell.TOP_DOT),
+    '⠋': (HalfCell.TOP_MIDDLE_DOT, HalfCell.TOP_DOT),
+    '⠌': (HalfCell.BOTTOM_DOT, HalfCell.TOP_DOT),
+    '⠍': (HalfCell.TOP_BOTTOM_DOT, HalfCell.TOP_DOT),
+    '⠎': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.TOP_DOT),
+    '⠏': (HalfCell.ALL_DOTS, HalfCell.TOP_DOT),
+    '⠐': (HalfCell.NO_DOT, HalfCell.MIDDLE_DOT),
+    '⠑': (HalfCell.TOP_DOT, HalfCell.MIDDLE_DOT),
+    '⠒': (HalfCell.MIDDLE_DOT, HalfCell.MIDDLE_DOT),
+    '⠓': (HalfCell.TOP_MIDDLE_DOT, HalfCell.MIDDLE_DOT),
+    '⠔': (HalfCell.BOTTOM_DOT, HalfCell.MIDDLE_DOT),
+    '⠕': (HalfCell.TOP_BOTTOM_DOT, HalfCell.MIDDLE_DOT),
+    '⠖': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.MIDDLE_DOT),
+    '⠗': (HalfCell.ALL_DOTS, HalfCell.MIDDLE_DOT),
+    '⠘': (HalfCell.NO_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠙': (HalfCell.TOP_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠚': (HalfCell.MIDDLE_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠛': (HalfCell.TOP_MIDDLE_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠜': (HalfCell.BOTTOM_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠝': (HalfCell.TOP_BOTTOM_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠞': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.TOP_MIDDLE_DOT),
+    '⠟': (HalfCell.ALL_DOTS, HalfCell.TOP_MIDDLE_DOT),
+    '⠠': (HalfCell.NO_DOT, HalfCell.BOTTOM_DOT),
+    '⠡': (HalfCell.TOP_DOT, HalfCell.BOTTOM_DOT),
+    '⠢': (HalfCell.MIDDLE_DOT, HalfCell.BOTTOM_DOT),
+    '⠣': (HalfCell.TOP_MIDDLE_DOT, HalfCell.BOTTOM_DOT),
+    '⠤': (HalfCell.BOTTOM_DOT, HalfCell.BOTTOM_DOT),
+    '⠥': (HalfCell.TOP_BOTTOM_DOT, HalfCell.BOTTOM_DOT),
+    '⠦': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.BOTTOM_DOT),
+    '⠧': (HalfCell.ALL_DOTS, HalfCell.BOTTOM_DOT),
+    '⠨': (HalfCell.NO_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠩': (HalfCell.TOP_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠪': (HalfCell.MIDDLE_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠫': (HalfCell.TOP_MIDDLE_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠬': (HalfCell.BOTTOM_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠭': (HalfCell.TOP_BOTTOM_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠮': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.TOP_BOTTOM_DOT),
+    '⠯': (HalfCell.ALL_DOTS, HalfCell.TOP_BOTTOM_DOT),
+    '⠰': (HalfCell.NO_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠱': (HalfCell.TOP_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠲': (HalfCell.MIDDLE_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠳': (HalfCell.TOP_MIDDLE_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠴': (HalfCell.BOTTOM_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠵': (HalfCell.TOP_BOTTOM_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠶': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠷': (HalfCell.ALL_DOTS, HalfCell.MIDDLE_BOTTOM_DOT),
+    '⠸': (HalfCell.NO_DOT, HalfCell.ALL_DOTS),
+    '⠹': (HalfCell.TOP_DOT, HalfCell.ALL_DOTS),
+    '⠺': (HalfCell.MIDDLE_DOT, HalfCell.ALL_DOTS),
+    '⠻': (HalfCell.TOP_MIDDLE_DOT, HalfCell.ALL_DOTS),
+    '⠼': (HalfCell.BOTTOM_DOT, HalfCell.ALL_DOTS),
+    '⠽': (HalfCell.TOP_BOTTOM_DOT, HalfCell.ALL_DOTS),
+    '⠾': (HalfCell.MIDDLE_BOTTOM_DOT, HalfCell.ALL_DOTS),
+    '⠿': (HalfCell.ALL_DOTS, HalfCell.ALL_DOTS)
+}
 
 
 def braille_to_halfcells(braille: str) -> list[tuple[HalfCell, HalfCell]]:
     """
-    TODO: Translates braille text characters to HalfCells. Used for final display.
+    Translates braille text characters to HalfCells. Used for final display.
     """
-    raise NotImplementedError
+    assert is_braille(braille)
+    return [_br2hc[c] for c in braille]
+
 
 def is_braille(text: str) -> bool:
     """
-    TODO: Returns true if text contains only braille representation characters. Returns false otherwise.
+    Returns true if text contains only braille representation characters. Returns false otherwise.
     """
-    raise NotImplementedError
+    return all(c in _br2hc.keys() for c in text)
