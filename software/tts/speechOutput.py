@@ -16,6 +16,7 @@ class SpeechOutput():
     def __enter__(self):
         self.__speech_thread = threading.Thread(target=self.__run)
         self.__speech_thread.start()
+        return self
 
     
     def __exit__(self):
