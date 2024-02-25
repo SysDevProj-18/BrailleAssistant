@@ -23,6 +23,19 @@ def volume_down():
 
 ## /DUMMY ##
 
+## DEBUG ##
+
+def cell_to_string(left: HalfCell, right: HalfCell):
+    return chr(10240 + left + right * 8)
+
+def cells_to_string(cells: "list[tuple[HalfCell, HalfCell]]"):
+    return "".join(cell_to_string(*cell) for cell in cells)
+
+def pages_to_string(pages: "list[list[tuple[HalfCell, HalfCell]]]"):
+    return " / ".join(f"{cells_to_string(page)} ({len(page)} cells)" for page in pages)
+
+## /DEBUG ##
+
 # Constants / config
 REGULAR_KEYS = list("qwertyuiopasdfghjklzxcvbnm0123456789.:,;!?'\"(){}[]/\\-")
 KEY_SPACE = "space"
@@ -98,9 +111,9 @@ class Main:
 
 
     def __split_into_pages(self, to_split: "list[tuple[HalfCell]]"):
-        print(f"splitting {to_split} into pages...")
+        print(f"splitting {cells_to_string(to_split)} into pages...")
         words = self.__split_into_words(to_split)
-        print(f"...words are {words}...")
+        print(f"...words are {pages_to_string(words)}...")
 
         if words == [[]]:
             print(f"...no words; returning empty page [[]].")
@@ -117,8 +130,9 @@ class Main:
                 current_page.append(BRAILLE_SPACE)
                 current_page += word
             else:
-                pages.append(current_page) # page finished
-                if len(word) <= DISPLAY_SIZE:
+                if current_page != []:
+                    pages.append(current_page) # page finished
+                if len(word) <= DISPLAY_SIZE: # word can fit in display
                     current_page = word # word goes to start of next page
                 else: # we have to split the word up
                     new_pages = []
@@ -130,12 +144,12 @@ class Main:
         if current_page != []:
             pages.append(current_page) # final page
         
-        print(f"...pages are {pages}.")
+        print(f"...pages are {pages_to_string(pages)}.")
 
         return pages
 
     def __activate_display(self):
-        print(f"activating display with page {self.__current_display_page} of {self.__current_display_braille()}")
+        print(f"activating display with page {self.__current_display_page} ({cells_to_string(self.__current_display_braille()[self.__current_display_page])})")
         self.__braille_display.display(self.__current_display_braille()[self.__current_display_page])
 
 
@@ -170,7 +184,7 @@ class Main:
                 self.__activate_display()
         elif key == KEY_NEXT_PAGE:
             if self.__current_display_page != len(self.__current_display_braille()):
-                self.__current_display_page -= 1
+                self.__current_display_page += 1
                 self.__activate_display()
         elif key == KEY_UNCONTRACTED_BRAILLE:
             self.__use_contracted_braille = False
