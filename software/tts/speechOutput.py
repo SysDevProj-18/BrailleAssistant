@@ -42,3 +42,4 @@ if __name__ == "__main__":
     with SpeechOutput() as tts:
         tts.speak("Hello")
         tts.speak("world")
+        input("press enter to exit")
