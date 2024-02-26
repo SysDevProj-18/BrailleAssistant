@@ -1,5 +1,6 @@
 from enum import IntEnum, Enum
 from Braille import HalfCell, BRAILLE_DICT
+import Pip_Rotator as PR
 
 
 Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
@@ -33,20 +34,23 @@ class BrailleDisplay:
             @param wheel: Either Wheel.LEFT or Wheel.RIGHT
             @param direction: Either Direction.UP or Direction.DOWN
             """
+
+            pos = self.get_pos(wheel)
             # some GPIO magic here
-            if self.get_pos(wheel) == half_cell:
+            if pos == half_cell:
                 # no need to rotate
                pass 
-            elif self.get_pos(wheel) < half_cell:
+            elif pos < half_cell:
                 # rotate down
                 # DIRECTION_DOWN
-                # GPIO Magic
-               pass 
+                PR.movement ( (half_cell - pos), True)
+
             else:
                 # rotate up
                 # DIRECTION_UP
-                # GPIO Magic
-               pass 
+                PR.movement((pos - half_cell), False)
+
+            # updating the position after rotation
             if wheel == Wheel.LEFT:
                 self._l_wheel_pos = half_cell
             else:
