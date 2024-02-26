@@ -305,7 +305,7 @@ class Table:
                     f"Unimplemented opcode {tokens[0]} used in table {self.file}"
                 )
 
-    def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
+    def translate(self, text: str) -> "list[tuple[HalfCell, HalfCell]]":
         # pretranslation step
         if self.rules["pretrans"]:
             for rule in self.rules["pretrans"]:

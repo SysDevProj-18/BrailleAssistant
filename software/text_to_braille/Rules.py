@@ -20,8 +20,8 @@ class MapRule:
         self.replace = replace
 
     def __call__(
-        self, text: str, chargroups: dict[str, list[str]], variables: list[int]
-    ) -> tuple[str, list[int]]:
+        self, text: str, chargroups: "dict[str, list[str]]", variables: "list[int]"
+    ) -> "tuple[str, list[int]]":
         return re.sub(self.match, self.replace, text), variables
 
 
@@ -40,7 +40,7 @@ class MatchRule(MapRule):
     """
 
     @override
-    def __init__(self, match: tuple[str, str, str], replace: str):
+    def __init__(self, match: "tuple[str, str, str]", replace: str):
         self.match = None
         self.to_match = match  # NB: in this case, match is of the format (prefix, chars, postfix). See liblouis docs.
         self.replace = replace
@@ -67,8 +67,8 @@ class MatchRule(MapRule):
 
     @override
     def __call__(
-        self, text: str, chargroups: dict[str, list[str]], variables: list[int]
-    ) -> tuple[str, list[int]]:
+        self, text: str, chargroups: "dict[str, list[str]]", variables: "list[int]"
+    ) -> "tuple[str, list[int]]":
         if not self.match:
             # translate to_match:
             for i in self.match_to_regex:

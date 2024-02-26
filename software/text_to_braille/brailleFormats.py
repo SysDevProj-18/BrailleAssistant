@@ -3,14 +3,14 @@ from data_structures import Braille
 HalfCell = Braille.HalfCell  # FIXME: figure out relative imports
 
 
-def dots_to_halfcells(dots: str) -> list[tuple[HalfCell, HalfCell]]:
+def dots_to_halfcells(dots: str) -> "list[tuple[HalfCell, HalfCell]]":
     """
     Converts from liblouis dot sequences to a list of HalfCells.
     """
     return [_dots_to_halfcells(cell) for cell in "-".split(dots)]
 
 
-def _dots_to_halfcells(dots: str) -> tuple[HalfCell, HalfCell]:
+def _dots_to_halfcells(dots: str) -> "tuple[HalfCell, HalfCell]":
     if dots == "0":
         return HalfCell.NO_DOT, HalfCell.NO_DOT
 
@@ -32,7 +32,7 @@ def _dots_to_halfcells(dots: str) -> tuple[HalfCell, HalfCell]:
     return halftable[left_half], halftable[right_half]
 
 
-_dt2br: dict[str, str] = {
+_dt2br: "dict[str, str]" = {
     "0": "⠀",
     "1": "⠁",
     "2": "⠂",
@@ -107,7 +107,7 @@ def dots_to_braille(dots: str) -> str:
     return "".join(_dt2br[c] for c in "-".split(dots))
 
 
-_br2hc: dict[str, tuple[HalfCell, HalfCell]] = {
+_br2hc: "dict[str, tuple[HalfCell, HalfCell]]" = {
     "⠀": (HalfCell.NO_DOT, HalfCell.NO_DOT),
     "⠁": (HalfCell.TOP_DOT, HalfCell.NO_DOT),
     "⠂": (HalfCell.MIDDLE_DOT, HalfCell.NO_DOT),
@@ -175,7 +175,7 @@ _br2hc: dict[str, tuple[HalfCell, HalfCell]] = {
 }
 
 
-def braille_to_halfcells(braille: str) -> list[tuple[HalfCell, HalfCell]]:
+def braille_to_halfcells(braille: str) -> "list[tuple[HalfCell, HalfCell]]":
     """
     Translates braille text characters to HalfCells. Used for final display.
     """
