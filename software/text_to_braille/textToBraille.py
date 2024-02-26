@@ -2,7 +2,7 @@ import logging
 
 from .Rules import *
 from .brailleFormats import *
-from data_structures import Braille
+from data_structures.Braille import HalfCell
 
 HalfCell = Braille.HalfCell  # FIXME: figure out relative imports
 
@@ -152,7 +152,8 @@ class Table:
 
             # pretranslation opcodes
             case "correct":
-                self.rules["pretrans"] += PretransRule(tokens[1], tokens[2])
+#                self.rules["pretrans"] += PretransRule(tokens[1], tokens[2])
+                pass
 
             # translation opcodes
             case "always":
@@ -244,9 +245,7 @@ class Table:
 
             # miscellaneous opcodes
             case "undefined":  # set character to be used for untranslatable text
-                self.indicators["undefined"] = tokens[
-                    1
-                ]  # don't translate to braille (obviously)
+                self.indicators["undefined"] = tokens[1]  # don't translate to braille (obviously)
             case "capsmodechars":  # add characters that will not automatically terminate uppercase mode
                 self.chargroups["_CAPSMODE"] += tokens[1].split()
 
@@ -296,11 +295,11 @@ class Table:
                 | "seqbeforechars"
                 | "seqafterchars"
                 | "seqafterpattern"
-                | "context"
+                | "context"  # here onward are deprecated opcodes using liblouis subop syntax (OoS)
                 | "pass2"
                 | "pass3"
                 | "pass4"
-            ):  # <- deprecated opcodes using liblouis subop syntax (OoS)
+            ):
                 logging.warning(
                     f"Unimplemented opcode {tokens[0]} used in table {self.file}"
                 )
@@ -370,9 +369,9 @@ class Table:
 _escapes = [
     (re.compile(r"\\s"), " "),
     (re.compile(r"\\e"), "\x1B"),
-    (re.compile(r"\\x...."), lambda m: chr(int(m.groups(0)[-4:], 16))),
-    (re.compile(r"\\y....."), lambda m: chr(int(m.groups(0)[-5:], 16))),
-    (re.compile(r"\\z........"), lambda m: chr(int(m.groups(0)[-8:], 16))),
+    (re.compile(r"\\x...."), lambda m: chr(int(str(m.groups(0)[-4:]), 16))),
+    (re.compile(r"\\y....."), lambda m: chr(int(str(m.groups(0)[-5:]), 16))),
+    (re.compile(r"\\z........"), lambda m: chr(int(str(m.groups(0)[-8:]), 16))),
 ]
 
 

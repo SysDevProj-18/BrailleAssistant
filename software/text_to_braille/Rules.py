@@ -107,13 +107,9 @@ class MatchRule(MapRule):
             )
 
             self.match = re.compile(
-                "(?<="
-                + self.to_match[0]
-                + ")"
+                "(?<=" + self.to_match[0] + ")"
                 + self.to_match[1]
-                + "(?="
-                + self.to_match[2]
-                + ")"
+                + "(?=" + self.to_match[2] + ")"
             )
 
         return re.sub(self.match, self.replace, text), variables
