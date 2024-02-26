@@ -369,9 +369,9 @@ class Table:
 _escapes = [
     (re.compile(r"\\s"), " "),
     (re.compile(r"\\e"), "\x1B"),
-    (re.compile(r"\\x...."), lambda m: chr(int(str(m.groups(0)[-4:]), 16))),
-    (re.compile(r"\\y....."), lambda m: chr(int(str(m.groups(0)[-5:]), 16))),
-    (re.compile(r"\\z........"), lambda m: chr(int(str(m.groups(0)[-8:]), 16))),
+    (re.compile(r"\\x...."), lambda m: chr(int(str(m[0][-4:]), 16))),
+    (re.compile(r"\\y....."), lambda m: chr(int(str(m[0][-5:]), 16))),
+    (re.compile(r"\\z........"), lambda m: chr(int(str(m[0][-8:]), 16))),
 ]
 
 
