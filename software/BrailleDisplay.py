@@ -1,19 +1,22 @@
 from enum import IntEnum, Enum
-from data_structures import HalfCell, _BRAILLE_DICT
-# TODO: When in test mode don't import Pip_Rotator
-# import Pip_Rotator as PR
-
+from data_structures import HalfCell, Stepper
 
 Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
+
+IN1 = 24
+IN2 = 27
+IN3 = 23
+IN4 = 22
 
 
 class BrailleDisplay:
     NUM_CELLS = 10  # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
-        def __init__(self):
+        def __init__(self, stepper: Stepper):
             self._l_wheel_pos = HalfCell.NO_DOT
             self._r_wheel_pos = HalfCell.NO_DOT
+            self.stepper = stepper
 
         def display(self, cell: "tuple[HalfCell, HalfCell]"):
             """
@@ -39,16 +42,11 @@ class BrailleDisplay:
                 pass
             elif pos < half_cell:
                 # rotate down
-                # DIRECTION_DOWN
-                # TODO: Run only when not in test mode
-                # PR.movement((half_cell - pos), False)
-                pass
+                self.stepper.movement((half_cell - pos), False)
             else:
                 # rotate up
                 # DIRECTION_UP
-                # TODO: Run only when not in test mode
-                #:PR.movement((pos - half_cell), True)
-                pass
+                self.stepper.movement((pos - half_cell), True)
 
             # updating the position after rotation
             if wheel == Wheel.LEFT:
@@ -65,7 +63,8 @@ class BrailleDisplay:
             return self._l_wheel_pos if wheel == Wheel.LEFT else self._r_wheel_pos
 
     def __init__(self):
-        self.cells = [self.BrailleCell() for _ in range(self.NUM_CELLS)]
+        self.stepper = Stepper([IN1, IN2, IN3, IN4])
+        self.cells = [self.BrailleCell(self.stepper) for _ in range(self.NUM_CELLS)]
 
     def __enter__(self):
         # No point clearing unless we can detect initial positions of the wheels
