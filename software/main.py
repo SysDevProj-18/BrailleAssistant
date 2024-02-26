@@ -7,8 +7,8 @@ import asyncio
 
 
 ## DUMMY ##
-def text_to_braille(text: str, contracted: bool) -> "list[tuple[HalfCell]]":
-    return [BRAILLE_DICT[c] for c in text]  # TODO
+def text_to_braille(text: str, contracted: bool) -> "list[tuple[HalfCell, HalfCell]]":
+    return [_BRAILLE_DICT[c] for c in text]  # TODO
 
 
 def speech_to_text():
@@ -65,7 +65,7 @@ BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
 
 
 class Main:
-    def __init__(self, braille_display, text_to_speech):
+    def __init__(self, braille_display: BrailleDisplay, text_to_speech):
         self.__keyboard_entry_text = ""
         self.__display_text_alpha = ""
         self.__display_text_contracted = [[]]
@@ -105,7 +105,7 @@ class Main:
 
         self.__activate_display()
 
-    def __split_into_words(self, to_split: "list[tuple[HalfCell]]"):
+    def __split_into_words(self, to_split: "list[tuple[HalfCell, HalfCell]]"):
         words = []
         current_word = []
         for cell in to_split:
@@ -119,7 +119,7 @@ class Main:
 
         return words
 
-    def __split_into_pages(self, to_split: "list[tuple[HalfCell]]"):
+    def __split_into_pages(self, to_split: "list[tuple[HalfCell, HalfCell]]"):
         print(f"splitting {cells_to_string(to_split)} into pages...")
         words = self.__split_into_words(to_split)
         print(f"...words are {pages_to_string(words)}...")
