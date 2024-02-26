@@ -43,12 +43,12 @@ class BrailleDisplay:
             elif pos < half_cell:
                 # rotate down
                 # DIRECTION_DOWN
-                PR.movement ( (half_cell - pos), True)
+                PR.movement ((half_cell - pos), False)
 
             else:
                 # rotate up
                 # DIRECTION_UP
-                PR.movement((pos - half_cell), False)
+                PR.movement((pos - half_cell), True)
 
             # updating the position after rotation
             if wheel == Wheel.LEFT:
