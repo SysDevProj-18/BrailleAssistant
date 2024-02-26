@@ -30,15 +30,18 @@ class Stepper:
     def __init__(
         self,
         motor_pins,
-        step_sequence=Seq,
     ):
         self.motor_pins = [OutputDevice(pin) for pin in motor_pins]  # Control pins
 
     def setStep(self, w1, w2, w3, w4):
         new = [w1, w2, w3, w4]
         for pin in range(len(self.motor_pins)):
-            if self.motor_pins[pin] != new[pin]:
-                self.motor_pins[pin].on()
+            if self.motor_pins[pin].is_active:
+                if new[pin] == 0:
+                    self.motor_pins[pin].off()
+            else:
+                if new[pin] == 1:
+                    self.motor_pins[pin].on()
 
     def forward(self, delay, steps):
         for i in range(steps):
