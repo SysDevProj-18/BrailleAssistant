@@ -1,6 +1,4 @@
-from data_structures import Braille
-
-HalfCell = Braille.HalfCell  # FIXME: figure out relative imports
+from Braille import HalfCell
 
 
 def dots_to_halfcells(dots: str) -> list[tuple[HalfCell, HalfCell]]:
@@ -104,7 +102,7 @@ def dots_to_braille(dots: str) -> str:
     """
     Translates liblouis dot sequences to braille text characters. Used for translation. Cells should be seperated by -
     """
-    return "".join(_dt2br[c] for c in "-".split(dots))
+    return "".join(_dt2br[c] for c in dots.split("-"))
 
 
 _br2hc: dict[str, tuple[HalfCell, HalfCell]] = {

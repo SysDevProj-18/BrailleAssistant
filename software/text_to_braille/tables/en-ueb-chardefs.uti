@@ -26,15 +26,10 @@
 
 #-maintainer: James Bowden <james.bowden@rnib.org.uk>
 
-space \t 9 tab
-space \x001b 1b escape character for html back-translation
-space \x00A0 a NO-BREAK SPACE <noBreak> 0020 NON-BREAKING SPACE
-
 noback correct "\x200b" "\s"
-include spaces.uti
 
 include latinLetterDef6Dots.uti
-include latinUppercaseComp6.uti
+# include latinUppercaseComp6.uti
 
 
 #   Numeric Symbols
@@ -206,7 +201,7 @@ sign @ 4-1
 display [ 2467
 punctuation [ 46-126
 display \\ 12567
-sign \\ 456-16
+#sign \\ 456-16 FIXME
 display ] 124567
 punctuation ] 46-345
 # \x005e ^   see Modifiers
@@ -228,7 +223,6 @@ punctuation } 456-345
 #punctuation \x0093 236
 #punctuation \x0094 356
 #punctuation \x0096 36
-space \x00a0 a   non-breaking space
 sign \x00a1 45-56-235 ¡
 punctuation \x00a1 235 ¡
 sign \x00a2 4-14 ¢ cent
@@ -460,18 +454,6 @@ lowercase \x1ef9 45-12456-13456 ỹ
 
 #   Unicode:  General Punctuation
 
-space \x2000 0
-space \x2001 0
-space \x2002 0
-space \x2003 0
-space \x2004 0
-space \x2005 0
-space \x2006 0
-space \x2007 0
-space \x2008 0
-space \x2009 0
-space \x200a 0
-space \x200b 0
 punctuation \x2010 36 ‐
 punctuation \x2011 36 ‑
 noback punctuation \x2013 6-36 – backtranslate as \x2014
@@ -486,7 +468,6 @@ sign \x2020 4-6-1456 †   dagger
 sign \x2021 4-6-12456 ‡   double dagger
 sign \x2022 456-256 •   bullet
 punctuation \x2026 256-256-256 …   ellipsis
-space \x202f 0   narrow no-break space
 sign \x2032 2356 ′   prime (derivative)
 sign \x2033 2356-2356 ″   double prime (second derivative)
 
