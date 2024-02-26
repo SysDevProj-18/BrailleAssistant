@@ -4,10 +4,6 @@ A series of classes designed to encode the rules for Braille translation.
 import re
 from typing import override
 
-from data_structures import Braille
-
-HalfCell = Braille.HalfCell  # FIXME: figure out relative imports
-
 
 class MapRule:
     """
@@ -16,7 +12,7 @@ class MapRule:
     """
 
     def __init__(self, match: str, replace: str):
-        self.match = re.compile(match)  # use compiled regex for performance
+        self.match = re.compile(re.escape(match))  # use compiled regex for performance
         self.replace = replace
 
     def __call__(
@@ -50,8 +46,8 @@ class MatchRule(MapRule):
     # NOTE: due to regex limitations, ! is only valid in the context ![Aa], !a, !%_ and similar patterns.
     match_to_regex = [  # no type signature cause i'm mixing tuple[re.Pattern,str] and tuple[re.Pattern,func] >w<
         (re.compile(r"^-$"), ".*"),
-        (re.compile(r"(?<=!\[)\w+(?=])"), lambda m: f"[^{m.groups(0)}]"),
-        (re.compile(r"(?<=!)\w"), lambda m: f"[^{m.groups(0)}]"),
+        (re.compile(r"(?<=!\[)\w+(?=])"), lambda m: f"[^{m[0]}]"),
+        (re.compile(r"(?<=!)\w"), lambda m: f"[^{m[0]}]"),
     ]
 
     # Map from % syntax character shortcodes to full names. Omit unimplemented shortcodes (~<>).
@@ -72,7 +68,7 @@ class MatchRule(MapRule):
         if not self.match:
             # translate to_match:
             for i in self.match_to_regex:
-                self.to_match = tuple(re.sub(*i, x) for x in self.to_match)
+                self.to_match = tuple(re.sub(*i, re.escape(x)) for x in self.to_match)
 
             # handle %group and !%group syntax
             self.to_match = tuple(
@@ -95,14 +91,9 @@ class MatchRule(MapRule):
                     r"!%(\[.+]|.)",
                     lambda m: f"[^{''.join(chargroups[self.char_attributes[m.group(0)]])}"
                     if len(m.group(0)) == 1
-                    else "[^"
-                    + "".join(
-                        "".join(chargroups[self.char_attributes[i]])
-                        for i in m.group(0)[1:-1]
-                    )
-                    + "]",
-                    m,
-                )
+                    else "[^" + "".join(
+                        "".join(chargroups[self.char_attributes[i]]) for i in m.group(0)[1:-1]) + "]",
+                    m)
                 for m in self.to_match
             )
 
