@@ -1,6 +1,7 @@
 from enum import IntEnum, Enum
-from Braille import HalfCell, BRAILLE_DICT
-import Pip_Rotator as PR
+from data_structures import HalfCell, _BRAILLE_DICT
+# TODO: When in test mode don't import Pip_Rotator
+# import Pip_Rotator as PR
 
 
 Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
@@ -39,12 +40,15 @@ class BrailleDisplay:
             elif pos < half_cell:
                 # rotate down
                 # DIRECTION_DOWN
-                PR.movement((half_cell - pos), False)
-
+                # TODO: Run only when not in test mode
+                # PR.movement((half_cell - pos), False)
+                pass
             else:
                 # rotate up
                 # DIRECTION_UP
-                PR.movement((pos - half_cell), True)
+                # TODO: Run only when not in test mode
+                #:PR.movement((pos - half_cell), True)
+                pass
 
             # updating the position after rotation
             if wheel == Wheel.LEFT:
@@ -94,4 +98,3 @@ class BrailleDisplay:
 if __name__ == "__main__":
     with BrailleDisplay() as d:
         d.display("apple")
-
