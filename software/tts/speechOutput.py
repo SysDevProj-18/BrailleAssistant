@@ -10,6 +10,10 @@ class SpeechOutput:
         self.queue = queue.Queue()
         self.volume = 1  # from 0.0 to 1.0
         self.rate = 200  # default is 200 wpm
+        # self.engine = pyttsx3.init()
+        self.queue = queue.Queue()
+        # self.volume = 1  # from 0.0 to 1.0
+        # self.rate = 200  # default is 200 wpm
         self.__request_thread_stop = False
 
     def __enter__(self):
@@ -34,7 +38,6 @@ class SpeechOutput:
                 self.engine.runAndWait()
                 self.engine.endLoop()
             time.sleep(0.01)
-
 
     def speak(self, text):
         self.queue.put(text)
