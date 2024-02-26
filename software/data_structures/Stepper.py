@@ -58,7 +58,7 @@ class Stepper:
                 self.setStep(Seq[j][0], Seq[j][1], Seq[j][2], Seq[j][3])
                 sleep(delay)
 
-    def movement(self, steps, direction):
+    def movement(self, steps, direction: bool):
         """This method encapsulates the movement of the b stepper motor
         @params : steps ( int from 0 to 7 ) specifying the number of steps to turn
                   direction: either False for back or True for front
@@ -67,7 +67,7 @@ class Stepper:
         step_angle = (
             (steps) * 45 + MID_OFFSET
         )  # 22.5 This is the offset to always align the pip to the middle
-        no_of_steps = step_angle // DEGREE_PER_ROTATION
+        no_of_steps = int(step_angle // DEGREE_PER_ROTATION)
         if direction:
             self.forward(DELAY, no_of_steps)
         else:

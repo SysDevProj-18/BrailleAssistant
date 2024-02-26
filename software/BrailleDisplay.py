@@ -13,10 +13,10 @@ class BrailleDisplay:
     NUM_CELLS = 10  # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
-        def __init__(self):
+        def __init__(self, stepper: Stepper):
             self._l_wheel_pos = HalfCell.NO_DOT
             self._r_wheel_pos = HalfCell.NO_DOT
-            self.stepper = Stepper([IN1, IN2, IN3, IN4])
+            self.stepper = stepper
 
         def display(self, cell: "tuple[HalfCell, HalfCell]"):
             """
@@ -63,7 +63,8 @@ class BrailleDisplay:
             return self._l_wheel_pos if wheel == Wheel.LEFT else self._r_wheel_pos
 
     def __init__(self):
-        self.cells = [self.BrailleCell() for _ in range(self.NUM_CELLS)]
+        self.stepper = Stepper([IN1, IN2, IN3, IN4])
+        self.cells = [self.BrailleCell(self.stepper) for _ in range(self.NUM_CELLS)]
 
     def __enter__(self):
         # No point clearing unless we can detect initial positions of the wheels
