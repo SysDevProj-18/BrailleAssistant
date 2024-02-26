@@ -1,1 +1,1 @@
-from .Braille import HalfCell
+from .Braille import HalfCell, _BRAILLE_DICT

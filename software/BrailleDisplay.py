@@ -1,12 +1,13 @@
 from enum import IntEnum, Enum
 from Braille import HalfCell, BRAILLE_DICT
+import Pip_Rotator as PR
 
 
 Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
 
 
 class BrailleDisplay:
-    NUM_CELLS = 10 # TODO merge this with DISPLAY_SIZE in main
+    NUM_CELLS = 10  # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
         def __init__(self):
@@ -18,7 +19,7 @@ class BrailleDisplay:
             Displays a single braille character on the cell.
             @param braille: The character to be displayed.
             """
-            
+
             l_wheel, r_wheel = cell
             self._rotate(Wheel.LEFT, l_wheel)
             self._rotate(Wheel.RIGHT, r_wheel)
@@ -29,20 +30,23 @@ class BrailleDisplay:
             @param wheel: Either Wheel.LEFT or Wheel.RIGHT
             @param direction: Either Direction.UP or Direction.DOWN
             """
+
+            pos = self.get_pos(wheel)
             # some GPIO magic here
-            if self.get_pos(wheel) == half_cell:
+            if pos == half_cell:
                 # no need to rotate
-               pass 
-            elif self.get_pos(wheel) < half_cell:
+                pass
+            elif pos < half_cell:
                 # rotate down
                 # DIRECTION_DOWN
-                # GPIO Magic
-               pass 
+                PR.movement((half_cell - pos), False)
+
             else:
                 # rotate up
                 # DIRECTION_UP
-                # GPIO Magic
-               pass 
+                PR.movement((pos - half_cell), True)
+
+            # updating the position after rotation
             if wheel == Wheel.LEFT:
                 self._l_wheel_pos = half_cell
             else:
@@ -74,10 +78,14 @@ class BrailleDisplay:
         else:
             for i in range(0, len(braille)):
                 self.cells[i].display(braille[i])
-                print(f'Cell {i} displayed {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
+                print(
+                    f"Cell {i} displayed {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}"
+                )
             for i in range(len(braille), self.NUM_CELLS):
                 self.cells[i].display((HalfCell.NO_DOT, HalfCell.NO_DOT))
-                print(f'Cell {i} blanked to {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}')
+                print(
+                    f"Cell {i} blanked to {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}"
+                )
 
     def clear(self):
         self.display([])
@@ -86,3 +94,4 @@ class BrailleDisplay:
 if __name__ == "__main__":
     with BrailleDisplay() as d:
         d.display("apple")
+
