@@ -60,6 +60,7 @@ class Table:
             "_CAPSMODE": [],
             "_NUMMODE": [],
             "_NUMNOCONT": [],
+            "_": []  # special group for unimplemented groups; will always be empty
         }
         self.specialsymbols = {"decpoint": ("", ""), "hyphen": ("", "")}
         self.indicators = {"undefined": "⠿"}
@@ -256,7 +257,7 @@ class Table:
 
             # match opcode
             case "match":
-                # FIXME: match unimplemented because of \ doubling (see translate_escapes)
+                # FIXME: liblouis to regex translation; see MatchRule in Rules.py
                 pass
                 # self.rules["pass1"].append(MatchRule((tokens[1], tokens[2], tokens[3]), tokens[4]))
 
@@ -402,11 +403,11 @@ def translate_escapes(text: str) -> str:
     for e in _escapes:
         text = re.sub(*e, text)
 
-    # FIXME: use str.replace for \\ because python regex module was designed to torment me personally
-    # text.replace("\\\\", "\\")
+    #use str.replace for \\ because python regex module was designed to torment me personally
+    text.replace("\\\\", "\\")
     return text
 
 
 if __name__ == "__main__":
-    t = Table()
+    t = Table(DEFAULT_TABLE_G2)
     print(t.translate("The quick brown fox jumps over the lazy dog."))
