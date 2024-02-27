@@ -1,8 +1,5 @@
 from enum import IntEnum, Enum
-from data_structures import HalfCell, Stepper
-
-Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
-
+from data_structures import HalfCell, Stepper, Rail, Wheel
 IN1 = 24
 IN2 = 27
 IN3 = 23
@@ -13,10 +10,12 @@ class BrailleDisplay:
     NUM_CELLS = 10  # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
-        def __init__(self, stepper: Stepper):
+        def __init__(self, stepper: Stepper, rail: Rail, id):
             self._l_wheel_pos = HalfCell.NO_DOT
             self._r_wheel_pos = HalfCell.NO_DOT
             self.stepper = stepper
+            self.rail = rail
+            self.id = id
 
         def display(self, cell: "tuple[HalfCell, HalfCell]"):
             """
@@ -42,10 +41,12 @@ class BrailleDisplay:
                 pass
             elif pos < half_cell:
                 # rotate down
+                self.rail.move_to(self.id, wheel)
                 self.stepper.movement((half_cell - pos), False)
             else:
                 # rotate up
                 # DIRECTION_UP
+                self.rail.move_to(self.id, wheel)
                 self.stepper.movement((pos - half_cell), True)
 
             # updating the position after rotation
@@ -64,7 +65,10 @@ class BrailleDisplay:
 
     def __init__(self):
         self.stepper = Stepper([IN1, IN2, IN3, IN4])
-        self.cells = [self.BrailleCell(self.stepper) for _ in range(self.NUM_CELLS)]
+        self.rail = Rail([1, 2, 3, 4])
+        self.cells = [
+            self.BrailleCell(self.stepper, self.rail, i) for i in range(self.NUM_CELLS)
+        ]
 
     def __enter__(self):
         # No point clearing unless we can detect initial positions of the wheels
