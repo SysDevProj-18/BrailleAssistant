@@ -48,6 +48,7 @@ class MatchRule(MapRule):
         (re.compile(r"^-$"), ".*"),
         (re.compile(r"(?<=!\[)\w+(?=])"), lambda m: f"[^{m[0]}]"),
         (re.compile(r"(?<=!)\w"), lambda m: f"[^{m[0]}]"),
+        (re.compile(r"\\."), lambda m: r"\\"+m[0][1:] if m[0][1:] in r".^$*+?{}[]()\\" else m[0][1:])
     ]
 
     # Map from % syntax character shortcodes to full names. Omit unimplemented shortcodes (~<>).
@@ -59,6 +60,9 @@ class MatchRule(MapRule):
         "l": "lowercase",
         ".": "punctuation",
         "$": "sign",
+        "~": "_",
+        "<": "_",
+        ">": "_"
     }
 
     @override
@@ -68,35 +72,34 @@ class MatchRule(MapRule):
         if not self.match:
             # translate to_match:
             for i in self.match_to_regex:
-                self.to_match = tuple(re.sub(*i, re.escape(x)) for x in self.to_match)
+                self.to_match = tuple(re.sub(*i, x) for x in self.to_match)
 
             # handle %group and !%group syntax
             self.to_match = tuple(
                 re.sub(
-                    r"(?<=[^!]%)(\[.+]|.)",
-                    lambda m: f"[{''.join(chargroups[self.char_attributes[m.group(0)]])}"
-                    if len(m.group(0)) == 1
+                    r"(?<=[^!])%(\[.+?]|.)",
+                    lambda m: f"[{re.escape(''.join(chargroups[self.char_attributes[m[1]]]))}"
+                    if len(m[1]) == 1
                     else "["
-                    + "".join(
-                        "".join(chargroups[self.char_attributes[i]])
-                        for i in m.group(0)[1:-1]
-                    )
-                    + "]",
+                         + "".join('^' if j == '^' else re.escape("".join(chargroups[self.char_attributes[j]]))
+                                   for j in m[1][1:-1])
+                         + "]",
                     m,
                 )
                 for m in self.to_match
             )
             self.to_match = tuple(
                 re.sub(
-                    r"!%(\[.+]|.)",
-                    lambda m: f"[^{''.join(chargroups[self.char_attributes[m.group(0)]])}"
-                    if len(m.group(0)) == 1
+                    r"!%(\[.+?]|.)",
+                    lambda m: f"[^{''.join(chargroups[self.char_attributes[m[1]]])}"
+                    if len(m[1]) == 1
                     else "[^" + "".join(
-                        "".join(chargroups[self.char_attributes[i]]) for i in m.group(0)[1:-1]) + "]",
+                        "".join(chargroups[self.char_attributes[i]]) for i in m[1][1:-1]) + "]",
                     m)
                 for m in self.to_match
             )
 
+            # FIXME: liblouis to regex translation; fixed-width sequence for lookback workaround and bracket matching
             self.match = re.compile(
                 "(?<=" + self.to_match[0] + ")"
                 + self.to_match[1]
