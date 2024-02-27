@@ -6,7 +6,20 @@ from Braille import HalfCell
 
 
 # using Unified English Braille tables as they seem better maintained and more comprehensive.
-DEFAULT_TABLE = "tables/en-ueb-g2.ctb"
+DEFAULT_TABLE_G1 = "tables/en-ueb-g2.ctb"
+DEFAULT_TABLE_G2 = "tables/en-ueb-g2.ctb"
+
+
+class BrailleTranslator:
+    """
+    Simple wrapper class to allow hotswapping between contracted and uncontracted braille.
+    """
+    def __init__(self):
+        self.g1 = Table(DEFAULT_TABLE_G1)
+        self.g2 = Table(DEFAULT_TABLE_G2)
+
+    def translate(self, text: str, contracted: bool) -> list[tuple[HalfCell, HalfCell]]:
+        return self.g2.translate(text) if contracted else self.g1.translate(text)
 
 
 class Table:
@@ -23,7 +36,7 @@ class Table:
     table.translate("test")
     """
 
-    def __init__(self, file=DEFAULT_TABLE):
+    def __init__(self, file):
         self.file = file  # A filename is used instead of a grade indicator to improve multi-language support.
         self.rules = {
             "pretrans": [],  # rules that translate text to text (replace)
@@ -309,6 +322,9 @@ class Table:
                 )
 
     def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
+        # quick and nasty uppercase handling; all that's required for our use case but not particularly classy
+        text = ''.join(self.indicators["uppercaseletter"] + c if c in self.chargroups["uppercase"] else c for c in text)
+
         # pretranslation step
         if self.rules["pretrans"]:
             for rule in self.rules["pretrans"]:
