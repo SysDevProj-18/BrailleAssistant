@@ -1,8 +1,5 @@
 from enum import IntEnum, Enum
-from data_structures import HalfCell, Stepper, Rail
-
-Wheel = Enum("Wheel", ["LEFT", "RIGHT"])
-
+from data_structures import HalfCell, Stepper, Rail, Wheel
 IN1 = 24
 IN2 = 27
 IN3 = 23
@@ -44,12 +41,12 @@ class BrailleDisplay:
                 pass
             elif pos < half_cell:
                 # rotate down
-                self.rail.move_to(self.id)
+                self.rail.move_to(self.id, wheel)
                 self.stepper.movement((half_cell - pos), False)
             else:
                 # rotate up
                 # DIRECTION_UP
-                self.rail.move_to(self.id)
+                self.rail.move_to(self.id, wheel)
                 self.stepper.movement((pos - half_cell), True)
 
             # updating the position after rotation
