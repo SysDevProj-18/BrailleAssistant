@@ -16,17 +16,13 @@ import re
 # please excuse starting a script with this wall instead of storing it separately; it should definitely be moved out for
 # production but at this stage portability is key. lots of options for encoding this later!
 BRAILLE_DICT = {
-    " ing": "⠀⠊⠝⠛", # handle contractions that can't begin words
-#   " ble": "⠀⠃⠇⠑", # removed in UEB
-
-    " ": "⠀", # place space early for efficiency. note that the character in the value position is U+2800 dots-0
-
-    "with": "⠾",
-    "and": "⠯",
-    "for": "⠿",
-    "the": "⠮",
+    " with ": " ⠾ ",
+    " and ": " ⠯ ",
+    " for ": " ⠿ ",
+    "the ": "⠮ ",
     "ing": "⠬",
-#   "ble": "⠼", # removed in UEB
+    "ble": "⠼", # removed in UEB
+    " ": " ",
 
     "of": "⠷",
     "ch": "⠡",
@@ -73,55 +69,74 @@ BRAILLE_DICT = {
     "y": "⠽",
     "z": "⠵",
 
-    "á": "⠈⠁",
-    "é": "⠈⠑",
-    "í": "⠈⠊",
-    "ó": "⠈⠕",
-    "ú": "⠈⠥",
+    "A": "⠠⠁",
+    "B": "⠠⠃",
+    "C": "⠠⠉",
+    "D": "⠠⠙",
+    "E": "⠠⠑",
+    "F": "⠠⠋",
+    "G": "⠠⠛",
+    "H": "⠠⠓",
+    "I": "⠠⠊",
+    "J": "⠠⠚",
+    "K": "⠠⠅",
+    "L": "⠠⠇",
+    "M": "⠠⠍",
+    "N": "⠠⠝",
+    "O": "⠠⠕",
+    "P": "⠠⠏",
+    "Q": "⠠⠟",
+    "R": "⠠⠗",
+    "S": "⠠⠎",
+    "T": "⠠⠞",
+    "U": "⠠⠥",
+    "V": "⠠⠧",
+    "W": "⠠⠺",
+    "X": "⠠⠭",
+    "Y": "⠠⠽",
+    "Z": "⠠⠵",
 
-    "à": "⠈⠁",
-    "è": "⠈⠑",
-    "ì": "⠈⠊",
-    "ò": "⠈⠕",
-    "ù": "⠈⠥",
+    "0": "⠼⠚",
+    "1": "⠼⠁",
+    "2": "⠼⠃",
+    "3": "⠼⠉",
+    "4": "⠼⠙",
+    "5": "⠼⠑",
+    "6": "⠼⠋",
+    "7": "⠼⠛",
+    "8": "⠼⠓",
+    "9": "⠼⠊",
 
-    "â": "⠈⠁",
-    "ê": "⠈⠑",
-    "î": "⠈⠊",
-    "ô": "⠈⠕",
-    "û": "⠈⠥",
-
-    "ä": "⠈⠁",
-    "ë": "⠈⠑",
-    "ï": "⠈⠊",
-    "ö": "⠈⠕",
-    "ü": "⠈⠥",
-
-    "ā": "⠈⠁",
-    "ē": "⠈⠑",
-    "ī": "⠈⠊",
-    "ū": "⠈⠕",
-    "ō": "⠈⠥", # consider also implementing breve, haček, Ł, å, ogonek, đ, Ħ, ș, ø, and check umlaut/diarsesis cross-handling
-
-    "ç": "⠈⠉",
-    "ñ": "⠈⠝",
-
-    ",": "⠂",
-    ";": "⠆",
-    ":": "⠒",
+    ".": ".",
+    "!": "⠖",
+    "?": "⠦",
     "'": "⠄",
-    "%": "⠨⠴",
-
-    ".": "⠲⠠",
-    "!": "⠖⠠", #WARNING: these three are followed by a capitalisation symbol as a stopgap solution
-    "?": "⠦⠠",
-
-    "#": "#" # fallback handling
+    ";": "⠆",
+    "<": "⠦",
+    ">": "⠴",
 }
 
 def text_to_braille(text: str) -> str:
     regex = re.compile('|'.join(map(re.escape, BRAILLE_DICT)))
     return regex.sub(lambda match: BRAILLE_DICT[match.group(0)], text)
+
+def text_to_braille1(text: str) -> str:
+    global BRAILLE_DICT
+
+    braille = ""
+    while text:
+        for i in BRAILLE_DICT.keys():
+            if text[:len(i)] == i:
+                text = text[len(i):]
+                braille += BRAILLE_DICT[i]
+                break
+            elif i == '?':
+                # handle no matching characters
+                text = text[1:]
+                braille += '?'
+                break # <- probably redundant
+
+    return braille
 
 if __name__ == "__main__":
     print(text_to_braille(' '.join(sys.argv[1:])))
