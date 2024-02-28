@@ -1,7 +1,6 @@
-# generate a barchart
-# which shows the expected word and the misclassification rate
-# for each word in the test set
+import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 import csv
 import os
 import typing
@@ -115,3 +114,25 @@ for speaker in sentence_wer_by_speaker.keys():
     )
 print("WER by speaker")
 print(sentence_wer_by_speaker)
+
+# bar chart where the sentences are on the y-axis
+# and the x-axis is the WER
+# sort the sentences by WER
+sentence_wer = dict(sorted(sentence_wer.items(), key=lambda item: item[1]))
+f, ax = plt.subplots(figsize=(6, 15))
+sns.barplot(
+    x=list(sentence_wer.values()),
+    y=list(sentence_wer.keys()),
+    palette="viridis",
+)
+ax.set(xlim=(0, 1))
+
+plt.title("Word Error Rate by sentence")
+# color the bars based on the WER
+for i in range(len(list(sentence_wer.keys()))):
+    ax.patches[i].set_facecolor(
+        plt.cm.viridis(sentence_wer[list(sentence_wer.keys())[i]])
+    )
+# save but make sure that it's not cut off
+plt.tight_layout()
+plt.savefig("wer_sentence.png", bbox_inches="tight")
