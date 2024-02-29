@@ -1,0 +1,94 @@
+#
+#  Copyright (C) 2010, 2011 DocArch <http://www.docarch.be>.
+#
+#  This file is part of liblouis.
+#
+#  liblouis is free software: you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation, either version 2.1 of the
+#  License, or (at your option) any later version.
+#
+#  liblouis is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with liblouis. If not, see
+#  <http://www.gnu.org/licenses/>.
+#
+# ----------------------------------------------------------------------------------------------
+#  odt2braille - Braille authoring in OpenOffice.org.
+# ----------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------
+# Unicode 2800..28FF  Braille Patterns
+# ----------------------------------------------------------------------------------------------
+
+noback sign        \x2800  0                    # ⠀                   BRAILLE PATTERN DOTS-0
+noback sign        \x2801  1                    # ⠁                   BRAILLE PATTERN DOTS-1
+noback sign        \x2802  2                    # ⠂                   BRAILLE PATTERN DOTS-2
+noback sign        \x2803  12                   # ⠃                   BRAILLE PATTERN DOTS-12
+noback sign        \x2804  3                    # ⠄                   BRAILLE PATTERN DOTS-3
+noback sign        \x2805  13                   # ⠅                   BRAILLE PATTERN DOTS-13
+noback sign        \x2806  23                   # ⠆                   BRAILLE PATTERN DOTS-23
+noback sign        \x2807  123                  # ⠇                   BRAILLE PATTERN DOTS-123
+noback sign        \x2808  4                    # ⠈                   BRAILLE PATTERN DOTS-4
+noback sign        \x2809  14                   # ⠉                   BRAILLE PATTERN DOTS-14
+noback sign        \x280A  24                   # ⠊                   BRAILLE PATTERN DOTS-24
+noback sign        \x280B  124                  # ⠋                   BRAILLE PATTERN DOTS-124
+noback sign        \x280C  34                   # ⠌                   BRAILLE PATTERN DOTS-34
+noback sign        \x280D  134                  # ⠍                   BRAILLE PATTERN DOTS-134
+noback sign        \x280E  234                  # ⠎                   BRAILLE PATTERN DOTS-234
+noback sign        \x280F  1234                 # ⠏                   BRAILLE PATTERN DOTS-1234
+noback sign        \x2810  5                    # ⠐                   BRAILLE PATTERN DOTS-5
+noback sign        \x2811  15                   # ⠑                   BRAILLE PATTERN DOTS-15
+noback sign        \x2812  25                   # ⠒                   BRAILLE PATTERN DOTS-25
+noback sign        \x2813  125                  # ⠓                   BRAILLE PATTERN DOTS-125
+noback sign        \x2814  35                   # ⠔                   BRAILLE PATTERN DOTS-35
+noback sign        \x2815  135                  # ⠕                   BRAILLE PATTERN DOTS-135
+noback sign        \x2816  235                  # ⠖                   BRAILLE PATTERN DOTS-235
+noback sign        \x2817  1235                 # ⠗                   BRAILLE PATTERN DOTS-1235
+noback sign        \x2818  45                   # ⠘                   BRAILLE PATTERN DOTS-45
+noback sign        \x2819  145                  # ⠙                   BRAILLE PATTERN DOTS-145
+noback sign        \x281A  245                  # ⠚                   BRAILLE PATTERN DOTS-245
+noback sign        \x281B  1245                 # ⠛                   BRAILLE PATTERN DOTS-1245
+noback sign        \x281C  345                  # ⠜                   BRAILLE PATTERN DOTS-345
+noback sign        \x281D  1345                 # ⠝                   BRAILLE PATTERN DOTS-1345
+noback sign        \x281E  2345                 # ⠞                   BRAILLE PATTERN DOTS-2345
+noback sign        \x281F  12345                # ⠟                   BRAILLE PATTERN DOTS-12345
+noback sign        \x2820  6                    # ⠠                   BRAILLE PATTERN DOTS-6
+noback sign        \x2821  16                   # ⠡                   BRAILLE PATTERN DOTS-16
+noback sign        \x2822  26                   # ⠢                   BRAILLE PATTERN DOTS-26
+noback sign        \x2823  126                  # ⠣                   BRAILLE PATTERN DOTS-126
+noback sign        \x2824  36                   # ⠤                   BRAILLE PATTERN DOTS-36
+noback sign        \x2825  136                  # ⠥                   BRAILLE PATTERN DOTS-136
+noback sign        \x2826  236                  # ⠦                   BRAILLE PATTERN DOTS-236
+noback sign        \x2827  1236                 # ⠧                   BRAILLE PATTERN DOTS-1236
+noback sign        \x2828  46                   # ⠨                   BRAILLE PATTERN DOTS-46
+noback sign        \x2829  146                  # ⠩                   BRAILLE PATTERN DOTS-146
+noback sign        \x282A  246                  # ⠪                   BRAILLE PATTERN DOTS-246
+noback sign        \x282B  1246                 # ⠫                   BRAILLE PATTERN DOTS-1246
+noback sign        \x282C  346                  # ⠬                   BRAILLE PATTERN DOTS-346
+noback sign        \x282D  1346                 # ⠭                   BRAILLE PATTERN DOTS-1346
+noback sign        \x282E  2346                 # ⠮                   BRAILLE PATTERN DOTS-2346
+noback sign        \x282F  12346                # ⠯                   BRAILLE PATTERN DOTS-12346
+noback sign        \x2830  56                   # ⠰                   BRAILLE PATTERN DOTS-56
+noback sign        \x2831  156                  # ⠱                   BRAILLE PATTERN DOTS-156
+noback sign        \x2832  256                  # ⠲                   BRAILLE PATTERN DOTS-256
+noback sign        \x2833  1256                 # ⠳                   BRAILLE PATTERN DOTS-1256
+noback sign        \x2834  356                  # ⠴                   BRAILLE PATTERN DOTS-356
+noback sign        \x2835  1356                 # ⠵                   BRAILLE PATTERN DOTS-1356
+noback sign        \x2836  2356                 # ⠶                   BRAILLE PATTERN DOTS-2356
+noback sign        \x2837  12356                # ⠷                   BRAILLE PATTERN DOTS-12356
+noback sign        \x2838  456                  # ⠸                   BRAILLE PATTERN DOTS-456
+noback sign        \x2839  1456                 # ⠹                   BRAILLE PATTERN DOTS-1456
+noback sign        \x283A  2456                 # ⠺                   BRAILLE PATTERN DOTS-2456
+noback sign        \x283B  12456                # ⠻                   BRAILLE PATTERN DOTS-12456
+noback sign        \x283C  3456                 # ⠼                   BRAILLE PATTERN DOTS-3456
+noback sign        \x283D  13456                # ⠽                   BRAILLE PATTERN DOTS-13456
+noback sign        \x283E  23456                # ⠾                   BRAILLE PATTERN DOTS-23456
+noback sign        \x283F  123456               # ⠿                   BRAILLE PATTERN DOTS-123456
+
+# ----------------------------------------------------------------------------------------------
+
