@@ -15,6 +15,7 @@ class BrailleTranslator:
     Simple wrapper class to allow hotswapping between contracted and uncontracted braille.
     """
     def __init__(self):
+        # FIXME: both tables producing contracted translations
         self.g1 = Table(DEFAULT_TABLE_G1)
         self.g2 = Table(DEFAULT_TABLE_G2)
 
