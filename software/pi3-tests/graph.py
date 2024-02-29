@@ -25,12 +25,18 @@ for file in os.listdir():
                     expected[row[0]] = [row]
 
 fig,ax = plt.subplots(figsize=(8, 8))
-ax.barh(list(expected.keys()), [len([x for x in expected[word] if x[0] != x[1]])/len(expected[word]) for word in expected.keys()])
+ax.barh(
+    list(expected.keys()),
+    [len([x for x in expected[word] if x[0] != x[1]])/len(expected[word]) for word in expected.keys()],
+    height=.6
+)
 ax.set_xlabel('Misclassification Rate')
 ax.set_ylabel('Word')
 ax.set_title('Misclassification Rate by Word')
 ax.set_xlim(0, 1)
 ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+ax.grid()
+ax.set_axisbelow(True)
 # save 
 plt.savefig('misclassification_rate.png')
 
@@ -39,11 +45,13 @@ fig,ax = plt.subplots(figsize=(8, 8))
 average = {}
 for word in expected.keys():
     average[word] = sum([float(x[2]) for x in expected[word]])/len(expected[word])
-ax.barh(list(average.keys()), list(average.values()))
+ax.barh(list(average.keys()), list(average.values()), height=.6)
 ax.set_xlabel('Average Confidence Rate')
 ax.set_ylabel('Word')
 ax.set_title('Average Confidence Rate by Word')
 ax.set_xlim(0, 1)
 ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+ax.grid()
+ax.set_axisbelow(True)  # used to put grid behind data
 # save
 plt.savefig('average_confidence_rate.png')
