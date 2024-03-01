@@ -65,7 +65,7 @@ BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
 
 
 class Main:
-    def __init__(self, braille_display: BrailleDisplay, text_to_speech):
+    def __init__(self, braille_display: BrailleDisplay, text_to_speech: SpeechOutput):
         self.__keyboard_entry_text = ""
         self.__display_text_alpha = ""
         self.__display_text_contracted = [[]]
