@@ -2,6 +2,7 @@ from sshkeyboard import listen_keyboard
 from data_structures import HalfCell, _BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
 from speech_recogniser import SpeechRecogniser
+from ocr import VisionRecogniser
 from tts.speechOutput import SpeechOutput
 import asyncio
 
@@ -16,7 +17,6 @@ def speech_to_text():
     text = asyncio.run(sr.listen())
     return text
 
-
 def volume_up():
     print("volume_up()")  # TODO
 
@@ -24,8 +24,12 @@ def volume_up():
 def volume_down():
     print("volume_down()")  # TODO
 
-
 ## /DUMMY ##
+    
+def image_to_text():
+    vr = VisionRecogniser()
+    text = vr.main()
+    return text
 
 ## DEBUG ##
 
@@ -54,6 +58,7 @@ KEY_SPEAK_KEYPRESS_ON = "f2"
 KEY_SPEAK_KEYPRESS_OFF = "f3"
 KEY_SPEAK_STORED = "f4"
 KEY_MICROPHONE = "f5"
+KEY_CAMERA = "f6"
 KEY_PREVIOUS_PAGE = "left"
 KEY_NEXT_PAGE = "right"
 KEY_UNCONTRACTED_BRAILLE = "f11"
@@ -193,6 +198,8 @@ class Main:
             self.__text_to_speech.speak(self.__display_text_alpha)
         elif key == KEY_MICROPHONE:
             self.__set_display_text(speech_to_text())
+        elif key == KEY_CAMERA:
+            self.__set_display_text(image_to_text())
         elif key == KEY_PREVIOUS_PAGE:
             if self.__current_display_page != 0:
                 self.__current_display_page -= 1
