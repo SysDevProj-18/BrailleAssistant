@@ -1,0 +1,1 @@
+from .textToBraille import Table
