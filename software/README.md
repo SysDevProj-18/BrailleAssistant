@@ -1,4 +1,6 @@
 # SDP Software
+
+## VOSK Model
 To run the software, you need to have Python installed, and the following dependencies:
 - requests
 - vosk
@@ -22,4 +24,23 @@ python main.py
 pip install --break-system-packages ...
 ```
 for some reason gpiozero does not play nice with virtual environments)
+
+
+## Whisper Moel (Experimental)
+Instructions for how to run the whisper model.
+Go into the whisper directory and run the following command:
+```bash
+pip install -r requirements.txt
+```
+Afterwards you can run the client by running the following command:
+```bash
+python main.py
+```
+
+
+On the Pi 
+PyAudio has the following dependencies:
+```bash
+sudo apt install portaudio19-dev python3-pyaudio
+```
 

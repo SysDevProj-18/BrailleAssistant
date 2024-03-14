@@ -1,8 +1,8 @@
 import logging
 
-from Rules import *
-from brailleFormats import *
-from Braille import HalfCell
+from .Rules import *
+from .brailleFormats import *
+from data_structures import HalfCell
 
 
 # using Unified English Braille tables as they seem better maintained and more comprehensive.
@@ -14,7 +14,9 @@ class BrailleTranslator:
     """
     Simple wrapper class to allow hotswapping between contracted and uncontracted braille.
     """
+
     def __init__(self):
+        # FIXME: both tables producing contracted translations
         self.g1 = Table(DEFAULT_TABLE_G1)
         self.g2 = Table(DEFAULT_TABLE_G2)
 
@@ -46,7 +48,9 @@ class Table:
             "pass2": [],  # second pass rules
             "pass3": [],  # third pass rules
             "pass4": [],  # fourth pass rules
-            "charrules": [CharacterRule(" ", "⠀")],  # individual character translation rules; used at end
+            "charrules": [
+                CharacterRule(" ", "⠀")
+            ],  # individual character translation rules; used at end
         }  # NB: space characters handled manually due to the need to strip whitespace
         self.chargroups = {
             "space": [],
@@ -60,7 +64,7 @@ class Table:
             "_CAPSMODE": [],
             "_NUMMODE": [],
             "_NUMNOCONT": [],
-            "_": []  # special group for unimplemented groups; will always be empty
+            "_": [],  # special group for unimplemented groups; will always be empty
         }
         self.specialsymbols = {"decpoint": ("", ""), "hyphen": ("", "")}
         self.indicators = {"undefined": "⠿"}
@@ -105,16 +109,22 @@ class Table:
                 | "math"
             ):
                 self.chargroups[tokens[0]].append(tokens[1])
-                self.rules["charrules"].append(CharacterRule(tokens[1], dots_to_braille(tokens[2])))
+                self.rules["charrules"].append(
+                    CharacterRule(tokens[1], dots_to_braille(tokens[2]))
+                )
             case "base":  # hacky solution for characters based on another character
                 self.chargroups[tokens[1]].append(tokens[2])
-                self.rules["pretrans"].append(MapRule(tokens[2], tokens[3]))  # FIXME (?): indicators for base opcode
+                self.rules["pretrans"].append(
+                    MapRule(tokens[2], tokens[3])
+                )  # FIXME (?): indicators for base opcode
                 pass
             case "attribute":
                 if tokens[1] in self.chargroups.keys():
                     self.chargroups[tokens[1]].append(tokens[2])
                 else:
-                    self.chargroups[tokens[1]] = [tokens[2]]  # handle creation of new character class
+                    self.chargroups[tokens[1]] = [
+                        tokens[2]
+                    ]  # handle creation of new character class
 
             # braille indicator opcodes
             case "modeletter":
@@ -154,100 +164,140 @@ class Table:
 
             # special symbol opcodes
             case "decpoint":
-                self.specialsymbols["decpoint"] = (tokens[1], dots_to_braille(tokens[2]))
+                self.specialsymbols["decpoint"] = (
+                    tokens[1],
+                    dots_to_braille(tokens[2]),
+                )
             case "hyphen":
                 self.specialsymbols["hyphen"] = (tokens[1], dots_to_braille(tokens[2]))
 
             # pretranslation opcodes
             case "correct":
-                self.rules["pretrans"].append(MapRule(tokens[1], tokens[2]))  # FIXME: 'correct' opcode liblouis syntax
+                self.rules["pretrans"].append(
+                    MapRule(tokens[1], tokens[2])
+                )  # FIXME: 'correct' opcode liblouis syntax
 
             # translation opcodes
             case "always":
-                self.rules["urgent"].append(MapRule(
-                    tokens[1],
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])))
+                self.rules["urgent"].append(
+                    MapRule(
+                        tokens[1],
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
 
             case "word":  # match if surrounded by whitespace / punctuation (only space and period for our use case)
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "joinword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"[\.\s](?=\w)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"[\.\s](?=\w)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "lowword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\s)" + tokens[1] + r"(?=\s)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\s)" + tokens[1] + r"(?=\s)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "sufword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s\w])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2]),
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"(?=[\.\s\w])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "prfword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s\w])" + tokens[1] + r"(?=[\.\s])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2]),
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s\w])" + tokens[1] + r"(?=[\.\s])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "begword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"(?=\w)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"(?=\w)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "begmidword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s\w])" + tokens[1] + r"(?=\w)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s\w])" + tokens[1] + r"(?=\w)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "midword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\w)" + tokens[1] + r"(?=\w)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\w)" + tokens[1] + r"(?=\w)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "midendword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\w)" + tokens[1] + r"(?=[\.\s\w])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\w)" + tokens[1] + r"(?=[\.\s\w])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "endword":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\w)" + tokens[1] + r"(?=[\s\.])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\w)" + tokens[1] + r"(?=[\s\.])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "partword":
-                self.rules["early"].append(MapRule(
-                    r"((?<=\w)" + tokens[1] + "|" + tokens[1] + r"(?=\w))",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"((?<=\w)" + tokens[1] + "|" + tokens[1] + r"(?=\w))",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "prepunc":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"(?=[\.]*\w)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"(?=[\.]*\w)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "postpunc":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\w[\.]*)" + tokens[1] + r"(?=[\.\s])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\w[\.]*)" + tokens[1] + r"(?=[\.\s])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "begnum":
-                self.rules["early"].append(MapRule(
-                    r"(?<=[\.\s])" + tokens[1] + r"(?=\d)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=[\.\s])" + tokens[1] + r"(?=\d)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "midnum":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\d)" + tokens[1] + r"(?=\d)",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\d)" + tokens[1] + r"(?=\d)",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
             case "endnum":
-                self.rules["early"].append(MapRule(
-                    r"(?<=\d)" + tokens[1] + r"(?=[\.\s])",
-                    tokens[1] if tokens[2] == '=' else dots_to_braille(tokens[2])
-                ))
+                self.rules["early"].append(
+                    MapRule(
+                        r"(?<=\d)" + tokens[1] + r"(?=[\.\s])",
+                        tokens[1] if tokens[2] == "=" else dots_to_braille(tokens[2]),
+                    )
+                )
 
             # context and multipass opcodes  (DEPRECATED!!)
             # case "context":
@@ -263,7 +313,9 @@ class Table:
 
             # miscellaneous opcodes
             case "undefined":  # set character to be used for untranslatable text
-                self.indicators["undefined"] = tokens[1]  # don't translate to braille (obviously)
+                self.indicators["undefined"] = tokens[
+                    1
+                ]  # don't translate to braille (obviously)
             case "capsmodechars":  # add characters that will not automatically terminate uppercase mode
                 self.chargroups["_CAPSMODE"] += tokens[1].split()
 
@@ -324,7 +376,12 @@ class Table:
 
     def translate(self, text: str) -> list[tuple[HalfCell, HalfCell]]:
         # quick and nasty uppercase handling; all that's required for our use case but not particularly classy
-        text = ''.join(self.indicators["uppercaseletter"] + c if c in self.chargroups["uppercase"] else c for c in text)
+        text = "".join(
+            self.indicators["uppercaseletter"] + c
+            if c in self.chargroups["uppercase"]
+            else c
+            for c in text
+        )
 
         # pretranslation step
         if self.rules["pretrans"]:
@@ -392,7 +449,7 @@ _escapes = [
     (re.compile(r"\\e"), "\x1B"),
     (re.compile(r"\\x...."), lambda m: chr(int(str(m[0][-4:]), 16))),
     (re.compile(r"\\y....."), lambda m: chr(int(str(m[0][-5:]), 16))),
-    (re.compile(r"\\z........"), lambda m: chr(int(str(m[0][-8:]), 16)))
+    (re.compile(r"\\z........"), lambda m: chr(int(str(m[0][-8:]), 16))),
 ]
 
 
@@ -403,7 +460,7 @@ def translate_escapes(text: str) -> str:
     for e in _escapes:
         text = re.sub(*e, text)
 
-    #use str.replace for \\ because python regex module was designed to torment me personally
+    # use str.replace for \\ because python regex module was designed to torment me personally
     text.replace("\\\\", "\\")
     return text
 

@@ -1,1 +1,1 @@
-from .textToBraille import Table
+from .textToBraille import Table, BrailleTranslator

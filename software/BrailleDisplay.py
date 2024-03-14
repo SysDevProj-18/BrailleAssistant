@@ -1,9 +1,13 @@
 from enum import IntEnum, Enum
 from data_structures import HalfCell, Stepper, Rail, Wheel
-IN1 = 24
-IN2 = 27
-IN3 = 23
-IN4 = 22
+
+stepper_IN1 = 26
+stepper_IN2 = 16
+stepper_IN3 = 20
+stepper_IN4 = 21
+
+rail_IN1 = 27
+rail_IN2 = 17
 
 
 class BrailleDisplay:
@@ -64,8 +68,8 @@ class BrailleDisplay:
             return self._l_wheel_pos if wheel == Wheel.LEFT else self._r_wheel_pos
 
     def __init__(self):
-        self.stepper = Stepper([IN1, IN2, IN3, IN4])
-        self.rail = Rail([1, 2, 3, 4])
+        self.stepper = Stepper([stepper_IN1, stepper_IN2, stepper_IN3, stepper_IN4])
+        self.rail = Rail([rail_IN1, rail_IN2])
         self.cells = [
             self.BrailleCell(self.stepper, self.rail, i) for i in range(self.NUM_CELLS)
         ]
@@ -93,6 +97,8 @@ class BrailleDisplay:
                 print(
                     f"Cell {i} blanked to {self.cells[i]._l_wheel_pos} {self.cells[i]._r_wheel_pos}"
                 )
+            # return to cell 0
+            self.rail.move_to(0, Wheel.LEFT)
 
     def clear(self):
         self.display([])
