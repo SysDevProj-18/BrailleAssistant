@@ -1,4 +1,4 @@
-from Braille import HalfCell
+from data_structures import HalfCell
 
 
 def dots_to_halfcells(dots: str) -> list[tuple[HalfCell, HalfCell]]:
