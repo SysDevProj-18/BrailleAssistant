@@ -1,7 +1,7 @@
 """
 A series of classes designed to encode the rules for Braille translation.
 """
-import re
+import regex as re
 from typing import override
 
 
@@ -82,6 +82,7 @@ class MatchRule(MapRule):
                     if len(m[1]) == 1
                     else "["
                          + "".join('^' if j == '^' else re.escape("".join(chargroups[self.char_attributes[j]]))
+                                                        if chargroups[self.char_attributes[j]] else "."
                                    for j in m[1][1:-1])
                          + "]",
                     m,
@@ -94,7 +95,8 @@ class MatchRule(MapRule):
                     lambda m: f"[^{''.join(chargroups[self.char_attributes[m[1]]])}"
                     if len(m[1]) == 1
                     else "[^" + "".join(
-                        "".join(chargroups[self.char_attributes[i]]) for i in m[1][1:-1]) + "]",
+                        "".join(chargroups[self.char_attributes[i]]) if chargroups[self.char_attributes[i]] else "."
+                        for i in m[1][1:-1]) + "]",
                     m)
                 for m in self.to_match
             )
