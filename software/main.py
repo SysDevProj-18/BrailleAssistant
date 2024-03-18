@@ -54,6 +54,7 @@ KEY_SPACE = "space"
 KEY_BACKSPACE_TEXT_ENTRY = "backspace"
 KEY_CLEAR_TEXT_ENTRY = "delete"
 KEY_SUBMIT_TEXT_ENTRY = "enter"
+KEY_AUDIO_INSTRUCTIONS = "f1"
 KEY_SPEAK_KEYPRESS_ON = "f2"
 KEY_SPEAK_KEYPRESS_OFF = "f3"
 KEY_SPEAK_STORED = "f4"
@@ -216,6 +217,9 @@ class Main:
             self.__use_contracted_braille = True
             self.__current_display_page = 0
             self.__activate_display()
+        elif key == KEY_AUDIO_INSTRUCTIONS:
+            with open("instructions.txt", "r") as instructions:
+                self.__text_to_speech.speak(instructions.read())
         elif key == KEY_VOLUME_DOWN:
             volume_down()
         elif key == KEY_VOLUME_UP:
