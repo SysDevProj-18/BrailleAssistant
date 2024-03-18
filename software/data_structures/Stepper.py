@@ -2,7 +2,6 @@ from gpiozero import OutputDevice
 from time import sleep
 import os
 
-os.environ["GPIOZERO_PIN_FACTORY"] = os.environ.get("GPIOZERO_PIN_FACTORY", "lgpio")
 
 Seq = [
     [1, 0, 0, 1],

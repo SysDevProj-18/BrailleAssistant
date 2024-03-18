@@ -3,7 +3,6 @@ from time import sleep
 import os
 from .Wheel import Wheel
 
-os.environ["GPIOZERO_PIN_FACTORY"] = os.environ.get("GPIOZERO_PIN_FACTORY", "lgpio")
 
 GEAR_RATIO = 1
 DELAY = 0.005  # in seconds, lower it to increase the speed of the motor
