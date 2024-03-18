@@ -5,14 +5,10 @@ from BrailleDisplay import BrailleDisplay
 from speech_recogniser import SpeechRecogniser
 from ocr import VisionRecogniser
 from tts.speechOutput import SpeechOutput
+from text_to_braille import BrailleTranslator
 import asyncio
 import os
 import argparse
-
-
-## DUMMY ##
-def text_to_braille(text: str, contracted: bool) -> "list[tuple[HalfCell, HalfCell]]":
-    return [_BRAILLE_DICT[c] for c in text]  # TODO
 
 
 def speech_to_text():
@@ -101,6 +97,7 @@ class Main:
 
         self.__braille_display = braille_display
         self.__text_to_speech = text_to_speech
+        self.__bt = BrailleTranslator()
 
         self.__debug = debug
         self.__mode = MODE.DEFAULT
@@ -109,6 +106,7 @@ class Main:
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
 
     def __current_display_braille(self):
+        self.debug(f"Contracted: {self.__use_contracted_braille}")
         return (
             self.__display_text_contracted
             if self.__use_contracted_braille
@@ -122,10 +120,10 @@ class Main:
 
         self.__display_text_alpha = text
         self.__display_text_uncontracted = self.__split_into_pages(
-            text_to_braille(text, False)
+            self.__bt.translate(text, False)
         )
         self.__display_text_contracted = self.__split_into_pages(
-            text_to_braille(text, True)
+            self.__bt.translate(text, True)
         )
         self.__current_display_page = 0
 
@@ -187,6 +185,7 @@ class Main:
         return pages
 
     def __activate_display(self):
+        print(f"length of display: {(self.__current_display_braille())}")
         print(
             f"activating display with page {self.__current_display_page} ({cells_to_string(self.__current_display_braille()[self.__current_display_page])})"
         )
@@ -198,12 +197,13 @@ class Main:
         print(f"'{key}' pressed")
 
         if self.__speak_keypresses:
+            self.debug(f"speak keypress: {key}")
             self.__text_to_speech.speak(key)
 
         print(f"current mode: {self.__mode}")
         if self.__mode == MODE.CAMERA:
             if key == KEY_SPACE:
-                img = image_to_text()
+                img = image_to_text(self.__debug)
                 print(f"OCR: {img}")
                 pass
         else:
@@ -219,6 +219,7 @@ class Main:
             elif key == KEY_CLEAR_TEXT_ENTRY:
                 self.__keyboard_entry_text = ""
             elif key == KEY_SPEAK_KEYPRESS_ON:
+                self.debug("speak keypresses on")
                 self.__speak_keypresses = True
             elif key == KEY_SPEAK_KEYPRESS_OFF:
                 self.__speak_keypresses = False
