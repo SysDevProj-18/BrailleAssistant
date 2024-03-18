@@ -11,6 +11,7 @@ To run the software, you need to have Python installed, and the following depend
 - sshkeyboard
 - lgpio
 - gpiozero
+- regex
 
 VOSK server needs to be running in the background. To run the server, check the README in the server directory.
 

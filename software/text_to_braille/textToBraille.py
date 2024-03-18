@@ -1,12 +1,12 @@
 import logging
 
-from .Rules import *
-from .brailleFormats import *
-from data_structures import HalfCell
+#from .Rules import *
+#from .brailleFormats import *
+#from data_structures import HalfCell
 
 
 # using Unified English Braille tables as they seem better maintained and more comprehensive.
-DEFAULT_TABLE_G1 = "tables/en-ueb-g2.ctb"
+DEFAULT_TABLE_G1 = "tables/en-ueb-g1.ctb"
 DEFAULT_TABLE_G2 = "tables/en-ueb-g2.ctb"
 
 
@@ -16,7 +16,6 @@ class BrailleTranslator:
     """
 
     def __init__(self):
-        # FIXME: both tables producing contracted translations
         self.g1 = Table(DEFAULT_TABLE_G1)
         self.g2 = Table(DEFAULT_TABLE_G2)
 
@@ -466,5 +465,6 @@ def translate_escapes(text: str) -> str:
 
 
 if __name__ == "__main__":
-    t = Table(DEFAULT_TABLE_G2)
-    print(t.translate("The quick brown fox jumps over the lazy dog."))
+    t = BrailleTranslator()
+    print(t.translate("The quick brown fox jumps over the lazy dog.", False))
+    print(t.translate("The quick brown fox jumps over the lazy dog.", True))
