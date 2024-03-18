@@ -1,3 +1,4 @@
+import enum
 from sshkeyboard import listen_keyboard
 from data_structures import HalfCell, _BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
@@ -5,6 +6,8 @@ from speech_recogniser import SpeechRecogniser
 from ocr import VisionRecogniser
 from tts.speechOutput import SpeechOutput
 import asyncio
+import os
+import argparse
 
 
 ## DUMMY ##
@@ -17,6 +20,7 @@ def speech_to_text():
     text = asyncio.run(sr.listen())
     return text
 
+
 def volume_up():
     print("volume_up()")  # TODO
 
@@ -24,12 +28,15 @@ def volume_up():
 def volume_down():
     print("volume_down()")  # TODO
 
+
 ## /DUMMY ##
-    
-def image_to_text():
-    vr = VisionRecogniser()
+
+
+def image_to_text(debug=False):
+    vr = VisionRecogniser(debug)
     text = vr.main()
     return text
+
 
 ## DEBUG ##
 
@@ -69,8 +76,19 @@ DISPLAY_SIZE = 10
 BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
 
 
+class MODE(enum.Enum):
+    DEFAULT = 0
+    CAMERA = 1
+
+
 class Main:
-    def __init__(self, braille_display: BrailleDisplay, text_to_speech: SpeechOutput):
+    def debug(self, *args):
+        if self.__debug:
+            print(f"DEBUG: {args}")
+
+    def __init__(
+        self, braille_display: BrailleDisplay, text_to_speech: SpeechOutput, debug=False
+    ):
         self.__keyboard_entry_text = ""
         self.__display_text_alpha = ""
         self.__display_text_contracted = [[]]
@@ -83,6 +101,9 @@ class Main:
 
         self.__braille_display = braille_display
         self.__text_to_speech = text_to_speech
+
+        self.__debug = debug
+        self.__mode = MODE.DEFAULT
 
     def run(self):
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
@@ -179,55 +200,81 @@ class Main:
         if self.__speak_keypresses:
             self.__text_to_speech.speak(key)
 
-        if key in REGULAR_KEYS:
-            self.__keyboard_entry_text += key
-        if key == KEY_SPACE:
-            self.__keyboard_entry_text += " "
-        elif key == KEY_SUBMIT_TEXT_ENTRY:
-            self.__set_display_text(self.__keyboard_entry_text)
-            self.__keyboard_entry_text = ""
-        elif key == KEY_BACKSPACE_TEXT_ENTRY:
-            self.__keyboard_entry_text = self.__keyboard_entry_text[:-1]
-        elif key == KEY_CLEAR_TEXT_ENTRY:
-            self.__keyboard_entry_text = ""
-        elif key == KEY_SPEAK_KEYPRESS_ON:
-            self.__speak_keypresses = True
-        elif key == KEY_SPEAK_KEYPRESS_OFF:
-            self.__speak_keypresses = False
-        elif key == KEY_SPEAK_STORED:
-            self.__text_to_speech.speak(self.__display_text_alpha)
-        elif key == KEY_MICROPHONE:
-            self.__set_display_text(speech_to_text())
-        elif key == KEY_CAMERA:
-            self.__set_display_text(image_to_text())
-        elif key == KEY_PREVIOUS_PAGE:
-            if self.__current_display_page != 0:
-                self.__current_display_page -= 1
+        print(f"current mode: {self.__mode}")
+        if self.__mode == MODE.CAMERA:
+            if key == KEY_SPACE:
+                img = image_to_text()
+                print(f"OCR: {img}")
+                pass
+        else:
+            if key in REGULAR_KEYS:
+                self.__keyboard_entry_text += key
+            if key == KEY_SPACE:
+                self.__keyboard_entry_text += " "
+            elif key == KEY_SUBMIT_TEXT_ENTRY:
+                self.__set_display_text(self.__keyboard_entry_text)
+                self.__keyboard_entry_text = ""
+            elif key == KEY_BACKSPACE_TEXT_ENTRY:
+                self.__keyboard_entry_text = self.__keyboard_entry_text[:-1]
+            elif key == KEY_CLEAR_TEXT_ENTRY:
+                self.__keyboard_entry_text = ""
+            elif key == KEY_SPEAK_KEYPRESS_ON:
+                self.__speak_keypresses = True
+            elif key == KEY_SPEAK_KEYPRESS_OFF:
+                self.__speak_keypresses = False
+            elif key == KEY_SPEAK_STORED:
+                self.__text_to_speech.speak(self.__display_text_alpha)
+            elif key == KEY_MICROPHONE:
+                self.__set_display_text(speech_to_text())
+            elif key == KEY_CAMERA:
+                self.__mode = MODE.CAMERA
+                return
+            elif key == KEY_PREVIOUS_PAGE:
+                if self.__current_display_page != 0:
+                    self.__current_display_page -= 1
+                    self.__activate_display()
+            elif key == KEY_NEXT_PAGE:
+                if self.__current_display_page != len(self.__current_display_braille()):
+                    self.__current_display_page += 1
+                    self.__activate_display()
+            elif key == KEY_UNCONTRACTED_BRAILLE:
+                self.__use_contracted_braille = False
+                self.__current_display_page = 0
                 self.__activate_display()
-        elif key == KEY_NEXT_PAGE:
-            if self.__current_display_page != len(self.__current_display_braille()):
-                self.__current_display_page += 1
+            elif key == KEY_CONTRACTED_BRAILLE:
+                self.__use_contracted_braille = True
+                self.__current_display_page = 0
                 self.__activate_display()
-        elif key == KEY_UNCONTRACTED_BRAILLE:
-            self.__use_contracted_braille = False
-            self.__current_display_page = 0
-            self.__activate_display()
-        elif key == KEY_CONTRACTED_BRAILLE:
-            self.__use_contracted_braille = True
-            self.__current_display_page = 0
-            self.__activate_display()
-        elif key == KEY_VOLUME_DOWN:
-            volume_down()
-        elif key == KEY_VOLUME_UP:
-            volume_up()
+            elif key == KEY_VOLUME_DOWN:
+                volume_down()
+            elif key == KEY_VOLUME_UP:
+                volume_up()
+            self.__mode = MODE.DEFAULT
 
     def __on_release(self, key):
         pass  # TEMP
 
 
 if __name__ == "__main__":
+    # flags
+    parser = argparse.ArgumentParser(description="BrailleEd program")
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Run without GPIO (for testing)",
+    )
+    parser.add_argument("--debug", action="store_true", help="Run in debug mode")
+    args = parser.parse_args()
+    if not args.local:
+        os.environ["GPIOZERO_PIN_FACTORY"] = os.environ.get(
+            "GPIOZERO_PIN_FACTORY", "lgpio"
+        )
+    else:
+        os.environ["GPIOZERO_PIN_FACTORY"] = os.environ.get(
+            "GPIOZERO_PIN_FACTORY", "mock"
+        )
     try:
         with BrailleDisplay() as display, SpeechOutput() as tts:
-            Main(display, tts).run()
+            Main(display, tts, args.debug).run()
     except KeyboardInterrupt:
         print("exiting")
