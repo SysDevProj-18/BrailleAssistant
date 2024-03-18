@@ -1,8 +1,8 @@
 """
 A series of classes designed to encode the rules for Braille translation.
 """
+from typing_extensions import override
 import regex as re
-from typing import override
 
 
 class MapRule:
@@ -48,7 +48,10 @@ class MatchRule(MapRule):
         (re.compile(r"^-$"), ".*"),
         (re.compile(r"(?<=!\[)\w+(?=])"), lambda m: f"[^{m[0]}]"),
         (re.compile(r"(?<=!)\w"), lambda m: f"[^{m[0]}]"),
-        (re.compile(r"\\."), lambda m: r"\\"+m[0][1:] if m[0][1:] in r".^$*+?{}[]()\\" else m[0][1:])
+        (
+            re.compile(r"\\."),
+            lambda m: r"\\" + m[0][1:] if m[0][1:] in r".^$*+?{}[]()\\" else m[0][1:],
+        ),
     ]
 
     # Map from % syntax character shortcodes to full names. Omit unimplemented shortcodes (~<>).
@@ -62,7 +65,7 @@ class MatchRule(MapRule):
         "$": "sign",
         "~": "_",
         "<": "_",
-        ">": "_"
+        ">": "_",
     }
 
     @override
@@ -81,10 +84,15 @@ class MatchRule(MapRule):
                     lambda m: f"[{re.escape(''.join(chargroups[self.char_attributes[m[1]]]))}"
                     if len(m[1]) == 1
                     else "["
-                         + "".join('^' if j == '^' else re.escape("".join(chargroups[self.char_attributes[j]]))
-                                                        if chargroups[self.char_attributes[j]] else "."
-                                   for j in m[1][1:-1])
-                         + "]",
+                    + "".join(
+                        "^"
+                        if j == "^"
+                        else re.escape("".join(chargroups[self.char_attributes[j]]))
+                        if chargroups[self.char_attributes[j]]
+                        else "."
+                        for j in m[1][1:-1]
+                    )
+                    + "]",
                     m,
                 )
                 for m in self.to_match
@@ -94,18 +102,28 @@ class MatchRule(MapRule):
                     r"!%(\[.+?]|.)",
                     lambda m: f"[^{''.join(chargroups[self.char_attributes[m[1]]])}"
                     if len(m[1]) == 1
-                    else "[^" + "".join(
-                        "".join(chargroups[self.char_attributes[i]]) if chargroups[self.char_attributes[i]] else "."
-                        for i in m[1][1:-1]) + "]",
-                    m)
+                    else "[^"
+                    + "".join(
+                        "".join(chargroups[self.char_attributes[i]])
+                        if chargroups[self.char_attributes[i]]
+                        else "."
+                        for i in m[1][1:-1]
+                    )
+                    + "]",
+                    m,
+                )
                 for m in self.to_match
             )
 
             # FIXME: liblouis to regex translation; fixed-width sequence for lookback workaround and bracket matching
             self.match = re.compile(
-                "(?<=" + self.to_match[0] + ")"
+                "(?<="
+                + self.to_match[0]
+                + ")"
                 + self.to_match[1]
-                + "(?=" + self.to_match[2] + ")"
+                + "(?="
+                + self.to_match[2]
+                + ")"
             )
 
         return re.sub(self.match, self.replace, text), variables

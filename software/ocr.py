@@ -31,16 +31,6 @@ class VisionRecogniser:
             return True
         return False
 
-    # def waitForSpace(self, timeout):
-    #     print("Press the space bar to scan your text.")
-    #     start_time = time.time()
-    #     while True:
-    #         if sshkeyboard.listen_keyboard(on_press=self.__press):
-    #             break
-    #         elif time.time() - start_time > timeout:
-    #             print(f"Timeout reached! Scanning your text...")
-    #             break
-
     def captureImage(self):
         cap = cv2.VideoCapture(CAM_PORT)  # Access webcam.
         _, frame = cap.read()  # Capture frame.
