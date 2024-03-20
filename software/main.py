@@ -28,8 +28,7 @@ def volume_down():
 ## /DUMMY ##
 
 
-def image_to_text(debug=False):
-    vr = VisionRecogniser(debug)
+def image_to_text(vr:VisionRecogniser, debug=False):
     text = vr.main()
     return text
 
@@ -101,6 +100,7 @@ class Main:
 
         self.__debug = debug
         self.__mode = MODE.DEFAULT
+        self.__vr = VisionRecogniser(debug)
 
     def run(self):
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
@@ -203,7 +203,7 @@ class Main:
         print(f"current mode: {self.__mode}")
         if self.__mode == MODE.CAMERA:
             if key == KEY_SPACE:
-                img = image_to_text(self.__debug)
+                img = image_to_text(self.__debug, self.__vr)
                 print(f"OCR: {img}")
                 pass
         else:
