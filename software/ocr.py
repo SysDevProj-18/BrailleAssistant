@@ -44,7 +44,7 @@ class VisionRecogniser:
         return image_incl_path
 
     # Read text using EasyOCR.
-    def readTxt(self, reader, image_incl_path):
+    def readTxt(self, reader: easyocr.Reader, image_incl_path):
         txt_result = reader.readtext(image_incl_path, detail=0)
         txt = " ".join(txt_result)
         return txt
