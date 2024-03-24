@@ -1,15 +1,8 @@
 from gpiozero import OutputDevice
+from constants import Constants
 from time import sleep
 import os
 from .Wheel import Wheel
-
-
-GEAR_RATIO = 1
-DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
-DEGREE_PER_ROTATION = 1.8
-GAP_LEFT_RIGHT = 2.0
-INTER_CELL_GAP = 70  # number of steps for the small gap
-MULTI_CELL_GAP = 30  # number of steps for a big gap
 
 
 class Rail:
@@ -40,23 +33,26 @@ class Rail:
     def step_calculator(self, pos: int, wheel: Wheel, dir: bool):
         inter_gap = (wheel + pos) - (self.pos[0] + self.pos[1])
         multi_cell_gap = self.pos[0] - pos
-        return abs(multi_cell_gap) * MULTI_CELL_GAP + abs(inter_gap) * INTER_CELL_GAP
+        return (
+            abs(multi_cell_gap) * Constants.RAIL_MULTI_CELL_GAP
+            + abs(inter_gap) * Constants.RAIL_INTER_CELL_GAP
+        )
 
     def _forward(self, steps: int):
         self.motor_pins[0].on()
         for _ in range(steps):
             self.motor_pins[1].on()
-            sleep(DELAY)
+            sleep(Constants.RAIL_DELAY)
             self.motor_pins[1].off()
-            sleep(DELAY)
+            sleep(Constants.RAIL_DELAY)
 
     def _backward(self, steps: int):
         self.motor_pins[0].off()
         for _ in range(steps):
             self.motor_pins[1].on()
-            sleep(DELAY)
+            sleep(Constants.RAIL_DELAY)
             self.motor_pins[1].off()
-            sleep(DELAY)
+            sleep(Constants.RAIL_DELAY)
 
 
 if __name__ == "_main_":
