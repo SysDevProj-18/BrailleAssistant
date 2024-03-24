@@ -1,25 +1,22 @@
 import enum
 from sshkeyboard import listen_keyboard
 from data_structures import HalfCell, _BRAILLE_DICT
+from constants import Constants
 from BrailleDisplay import BrailleDisplay
 from speech_recogniser import SpeechRecogniser
 from ocr import VisionRecogniser
 from tts.speechOutput import SpeechOutput
 from text_to_braille import BrailleTranslator
-from game import Game
 import asyncio
 import os
 import argparse
-import multiprocessing
-import threading
+from game import Game
 
 
 def speech_to_text():
     sr = SpeechRecogniser()
     text = asyncio.run(sr.listen())
     return text
-
-
 
 
 def volume_up():
@@ -33,7 +30,7 @@ def volume_down():
 ## /DUMMY ##
 
 
-def image_to_text(vr:VisionRecogniser, debug=False):
+def image_to_text(vr: VisionRecogniser, debug=False):
     text = vr.main()
     return text
 
@@ -53,31 +50,6 @@ def pages_to_string(pages: "list[list[tuple[HalfCell, HalfCell]]]"):
     return " / ".join(f"{cells_to_string(page)} ({len(page)} cells)" for page in pages)
 
 
-## /DEBUG ##
-
-# Constants / config
-REGULAR_KEYS = list("qwertyuiopasdfghjklzxcvbnm0123456789.:,;!?'\"(){}[]/\\-")
-KEY_SPACE = "space"
-KEY_BACKSPACE_TEXT_ENTRY = "backspace"
-KEY_CLEAR_TEXT_ENTRY = "delete"
-KEY_SUBMIT_TEXT_ENTRY = "enter"
-KEY_SPEAK_KEYPRESS_ON = "f2"
-KEY_SPEAK_KEYPRESS_OFF = "f3"
-KEY_SPEAK_STORED = "f4"
-KEY_MICROPHONE = "f5"
-KEY_CAMERA = "f6"
-KEY_GAME = "f7"
-KEY_GAME_OPTIONS = ["1", "2"]
-KEY_PREVIOUS_PAGE = "left"
-KEY_NEXT_PAGE = "right"
-KEY_UNCONTRACTED_BRAILLE = "f11"
-KEY_CONTRACTED_BRAILLE = "f12"
-KEY_VOLUME_UP = "pagedown"
-KEY_VOLUME_DOWN = "pageup"
-DISPLAY_SIZE = 10
-BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
-
-
 class MODE(enum.Enum):
     DEFAULT = 0
     CAMERA = 1
@@ -85,7 +57,9 @@ class MODE(enum.Enum):
 
 
 class Main:
-    
+    def debug(self, *args):
+        if self.__debug:
+            print(f"DEBUG: {args}")
 
     def __init__(
         self, braille_display: BrailleDisplay, text_to_speech: SpeechOutput, debug=False
@@ -112,10 +86,6 @@ class Main:
 
     def run(self):
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
-
-    def debug(self, *args):
-        if self.__debug:
-            print(f"DEBUG: {args}")
 
     def __current_display_braille(self):
         self.debug(f"Contracted: {self.__use_contracted_braille}")
@@ -145,7 +115,7 @@ class Main:
         words = []
         current_word = []
         for cell in to_split:
-            if cell == BRAILLE_SPACE:
+            if cell == Constants.BRAILLE_SPACE:
                 if current_word != []:
                     words.append(current_word)
                     current_word = []
@@ -168,22 +138,22 @@ class Main:
         current_page = []
 
         for word in words:
-            if len(current_page) == 0 and len(word) <= DISPLAY_SIZE:
+            if len(current_page) == 0 and len(word) <= Constants.DISPLAY_SIZE:
                 current_page += word  # no need for space at start
             elif (
-                len(current_page) + 1 + len(word) <= DISPLAY_SIZE
+                len(current_page) + 1 + len(word) <= Constants.DISPLAY_SIZE
             ):  # can fit on existing page
-                current_page.append(BRAILLE_SPACE)
+                current_page.append(Constants.BRAILLE_SPACE)
                 current_page += word
             else:
                 if current_page != []:
                     pages.append(current_page)  # page finished
-                if len(word) <= DISPLAY_SIZE:  # word can fit in display
+                if len(word) <= Constants.DISPLAY_SIZE:  # word can fit in display
                     current_page = word  # word goes to start of next page
                 else:  # we have to split the word up
                     new_pages = []
-                    for i in range(0, len(word), DISPLAY_SIZE):
-                        new_pages.append(word[i : i + DISPLAY_SIZE])
+                    for i in range(0, len(word), Constants.DISPLAY_SIZE):
+                        new_pages.append(word[i : i + Constants.DISPLAY_SIZE])
                     pages += new_pages[:-1]  # add whole pages for parts of the word
                     current_page = new_pages[
                         -1
@@ -214,75 +184,70 @@ class Main:
 
         print(f"current mode: {self.__mode}")
         if self.__mode == MODE.CAMERA:
-            if key == KEY_SPACE:
-                img = image_to_text(self.__debug, self.__vr)
+            if key == Constants.KEY_SPACE:
+                img = image_to_text(self.__vr, self.__debug)
                 print(f"OCR: {img}")
+                pass
         else:
 
             if self.__mode == MODE.GAME:
-
-                if key == KEY_GAME_OPTIONS:
+                if key == Constants.KEY_GAME_OPTIONS:
                     self.__game.sendInput(key)
                     return
-                elif key == KEY_MICROPHONE:
+                elif key == Constants.KEY_MICROPHONE:
                     self.__game.sendInput(speech_to_text())
                     return
-                elif key == KEY_GAME:
+                elif key == Constants.KEY_GAME:
                     self.__game.sendInput("#")
                     return
-
-            if key in REGULAR_KEYS:
-                self.__keyboard_entry_text += key 
-            if key == KEY_SPACE:
-                self.__keyboard_entry_text += " " 
-            elif key == KEY_SUBMIT_TEXT_ENTRY:
-                self.__set_display_text(self.__keyboard_entry_text) 
+            if key in Constants.REGULAR_KEYS:
+                self.__keyboard_entry_text += key
+            if key == Constants.KEY_SPACE:
+                self.__keyboard_entry_text += " "
+            elif key == Constants.KEY_SUBMIT_TEXT_ENTRY:
+                self.__set_display_text(self.__keyboard_entry_text)
                 self.__keyboard_entry_text = ""
-            elif key == KEY_BACKSPACE_TEXT_ENTRY:
+            elif key == Constants.KEY_BACKSPACE_TEXT_ENTRY:
                 self.__keyboard_entry_text = self.__keyboard_entry_text[:-1]
-            elif key == KEY_CLEAR_TEXT_ENTRY:
+            elif key == Constants.KEY_CLEAR_TEXT_ENTRY:
                 self.__keyboard_entry_text = ""
-            elif key == KEY_SPEAK_STORED:
-                self.__text_to_speech.speak(self.__display_text_alpha)
-            elif key == KEY_SPEAK_KEYPRESS_ON:
+            elif key == Constants.KEY_SPEAK_KEYPRESS_ON:
                 self.debug("speak keypresses on")
                 self.__speak_keypresses = True
-            elif key == KEY_SPEAK_KEYPRESS_OFF:
+            elif key == Constants.KEY_SPEAK_KEYPRESS_OFF:
                 self.__speak_keypresses = False
-            elif key == KEY_MICROPHONE:
-                if self.__mode == MODE.GAME:
-                    self.__game.sendInput(speech_to_text())
-                    return
+            elif key == Constants.KEY_SPEAK_STORED:
+                self.__text_to_speech.speak(self.__display_text_alpha)
+            elif key == Constants.KEY_MICROPHONE:
                 self.__set_display_text(speech_to_text())
-            elif key == KEY_CAMERA:
+            elif key == Constants.KEY_CAMERA:
                 self.__mode = MODE.CAMERA
                 return
-            elif key == KEY_GAME:  
+            elif key == Constants.KEY_GAME:  
                 self.__mode = MODE.GAME
                 self.__game = Game(self.__text_to_speech.speak, self.__set_display_text)
                 return
-            elif key == KEY_PREVIOUS_PAGE:
+            elif key == Constants.KEY_PREVIOUS_PAGE:
                 if self.__current_display_page != 0:
                     self.__current_display_page -= 1
                     self.__activate_display()
-            elif key == KEY_NEXT_PAGE:
+            elif key == Constants.KEY_NEXT_PAGE:
                 if self.__current_display_page != len(self.__current_display_braille()):
                     self.__current_display_page += 1
                     self.__activate_display()
-            elif key == KEY_UNCONTRACTED_BRAILLE:
+            elif key == Constants.KEY_UNCONTRACTED_BRAILLE:
                 self.__use_contracted_braille = False
                 self.__current_display_page = 0
                 self.__activate_display()
-            elif key == KEY_CONTRACTED_BRAILLE:
+            elif key == Constants.KEY_CONTRACTED_BRAILLE:
                 self.__use_contracted_braille = True
                 self.__current_display_page = 0
                 self.__activate_display()
-            elif key == KEY_VOLUME_DOWN:
+            elif key == Constants.KEY_VOLUME_DOWN:
                 volume_down()
-            elif key == KEY_VOLUME_UP:
+            elif key == Constants.KEY_VOLUME_UP:
                 volume_up()
-
-            # camera now need to manually switch mode
+            self.__mode = MODE.DEFAULT
 
     def __on_release(self, key):
         pass  # TEMP

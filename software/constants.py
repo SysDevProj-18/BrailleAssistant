@@ -27,11 +27,13 @@ class Constants:
     KEY_BACKSPACE_TEXT_ENTRY = "backspace"
     KEY_CLEAR_TEXT_ENTRY = "delete"
     KEY_SUBMIT_TEXT_ENTRY = "enter"
+    GAME_MENU_KEYS = ["1", "2"]
     KEY_SPEAK_KEYPRESS_ON = "f2"
     KEY_SPEAK_KEYPRESS_OFF = "f3"
     KEY_SPEAK_STORED = "f4"
     KEY_MICROPHONE = "f5"
     KEY_CAMERA = "f6"
+    KEY_GAME = "f7"
     KEY_PREVIOUS_PAGE = "left"
     KEY_NEXT_PAGE = "right"
     KEY_UNCONTRACTED_BRAILLE = "f11"
