@@ -6,8 +6,8 @@ stepper_IN2 = 16
 stepper_IN3 = 20
 stepper_IN4 = 21
 
-rail_IN1 = 27
-rail_IN2 = 17
+rail_IN1 = 2
+rail_IN2 = 3
 
 
 class BrailleDisplay:

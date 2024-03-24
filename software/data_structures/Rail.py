@@ -5,11 +5,11 @@ from .Wheel import Wheel
 
 
 GEAR_RATIO = 1
-DELAY = 0.005  # in seconds, lower it to increase the speed of the motor
+DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
 DEGREE_PER_ROTATION = 1.8
 GAP_LEFT_RIGHT = 2.0
-INTER_CELL_GAP = 21  # number of steps for the small gap
-MULTI_CELL_GAP = 7  # number of steps for a big gap
+INTER_CELL_GAP = 70  # number of steps for the small gap
+MULTI_CELL_GAP = 30  # number of steps for a big gap
 
 
 class Rail:
