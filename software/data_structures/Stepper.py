@@ -1,6 +1,6 @@
+from constants import Constants
 from gpiozero import OutputDevice
 from time import sleep
-import os
 
 
 Seq = [
@@ -13,14 +13,6 @@ Seq = [
     [0, 0, 1, 1],
     [0, 0, 0, 1],
 ]
-
-GEAR_RATIO = 1
-DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
-FULL_ROTATION = 500.0  # The total number of steps to complete a rotation
-DEGREE_PER_ROTATION = 360.0 / FULL_ROTATION
-MID_OFFSET = 22.5  # the offset to align all the pips to face up
-
-StepCount = 8
 
 
 class Stepper:
@@ -47,13 +39,13 @@ class Stepper:
 
     def forward(self, delay, steps):
         for i in range(steps):
-            for j in range(StepCount):
+            for j in range(Constants.STEPPER_STEP_COUNT):
                 self.setStep(Seq[j][0], Seq[j][1], Seq[j][2], Seq[j][3])
                 sleep(delay)
 
     def backward(self, delay, steps):
         for i in range(steps):
-            for j in reversed(range(StepCount)):
+            for j in reversed(range(Constants.STEPPER_STEP_COUNT)):
                 self.setStep(Seq[j][0], Seq[j][1], Seq[j][2], Seq[j][3])
                 sleep(delay)
 
@@ -64,13 +56,13 @@ class Stepper:
         returns True on completetion"""
 
         step_angle = (
-            (steps) * 45 + MID_OFFSET
+            (steps) * 45 + Constants.STEPPER_MID_OFFSET
         )  # 22.5 This is the offset to always align the pip to the middle
-        no_of_steps = int(step_angle // DEGREE_PER_ROTATION)
+        no_of_steps = int(step_angle // Constants.STEPPER_DEGREE_PER_ROTATION)
         if direction:
-            self.forward(DELAY, no_of_steps)
+            self.forward(Constants.STEPPER_DELAY, no_of_steps)
         else:
-            self.backward(DELAY, no_of_steps)
+            self.backward(Constants.STEPPER_DELAY, no_of_steps)
         return True
 
 

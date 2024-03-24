@@ -1,13 +1,5 @@
-from enum import IntEnum, Enum
 from data_structures import HalfCell, Stepper, Rail, Wheel
-
-stepper_IN1 = 26
-stepper_IN2 = 16
-stepper_IN3 = 20
-stepper_IN4 = 21
-
-rail_IN1 = 2
-rail_IN2 = 3
+from constants import Constants
 
 
 class BrailleDisplay:
@@ -68,6 +60,13 @@ class BrailleDisplay:
             return self._l_wheel_pos if wheel == Wheel.LEFT else self._r_wheel_pos
 
     def __init__(self):
+        stepper_IN1 = Constants.STEPPER_IN1
+        stepper_IN2 = Constants.STEPPER_IN2
+        stepper_IN3 = Constants.STEPPER_IN3
+        stepper_IN4 = Constants.STEPPER_IN4
+
+        rail_IN1 = Constants.RAIL_IN1
+        rail_IN2 = Constants.RAIL_IN2
         self.stepper = Stepper([stepper_IN1, stepper_IN2, stepper_IN3, stepper_IN4])
         self.rail = Rail([rail_IN1, rail_IN2])
         self.cells = [
@@ -102,8 +101,3 @@ class BrailleDisplay:
 
     def clear(self):
         self.display([])
-
-
-if __name__ == "__main__":
-    with BrailleDisplay() as d:
-        d.display("apple")
