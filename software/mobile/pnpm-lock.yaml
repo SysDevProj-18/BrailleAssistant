@@ -26,6 +26,9 @@ dependencies:
   expo:
     specifier: ~50.0.11
     version: 50.0.14(@babel/core@7.24.3)(@react-native/babel-preset@0.73.21)
+  expo-camera:
+    specifier: ~14.1.1
+    version: 14.1.1(expo@50.0.14)
   expo-linking:
     specifier: ~6.2.2
     version: 6.2.2(expo@50.0.14)
@@ -4488,6 +4491,15 @@ packages:
     transitivePeerDependencies:
       - expo
       - supports-color
+    dev: false
+
+  /expo-camera@14.1.1(expo@50.0.14):
+    resolution: {integrity: sha512-ANxQYy2P9qXxRoLWs7Gs3y7NM7OpYr7Q1H6kmQwJxHjjuJSc2qhwhY10I138d0fzB0h0p8NF1ezqIrqWct5AvQ==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 50.0.14(@babel/core@7.24.3)(@react-native/babel-preset@0.73.21)
+      invariant: 2.2.4
     dev: false
 
   /expo-constants@15.4.5(expo@50.0.14):

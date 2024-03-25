@@ -49,14 +49,17 @@ class VisionRecogniser:
         txt = " ".join(txt_result)
         return txt
 
-    def main(self):
-        reader = self.loadOcrReader(LANGUAGES)
-        image_path = self.createImageDir(IMG_DIR)
-        image = self.captureImage()
-        self.debug("Image captured.", image)
-        image_incl_path = self.saveImage(image_path, image)
-        self.debug("Image saved.", image_incl_path)
-        self.__read_txt = self.readTxt(reader, image_incl_path)
+    def main(self, img=None):
+        if img:
+            self.__read_txt = self.readTxt(reader, img)
+        else:
+            reader = self.loadOcrReader(LANGUAGES)
+            image_path = self.createImageDir(IMG_DIR)
+            image = self.captureImage()
+            self.debug("Image captured.", image)
+            image_incl_path = self.saveImage(image_path, image)
+            self.debug("Image saved.", image_incl_path)
+            self.__read_txt = self.readTxt(reader, image_incl_path)
         self.debug("Text read.", self.__read_txt)
         return self.__read_txt
 

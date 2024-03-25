@@ -1,4 +1,5 @@
 import enum
+from multiprocessing.context import threading
 from sshkeyboard import listen_keyboard
 from data_structures import HalfCell, _BRAILLE_DICT
 from BrailleDisplay import BrailleDisplay
@@ -7,8 +8,33 @@ from ocr import VisionRecogniser
 from tts.speechOutput import SpeechOutput
 from text_to_braille import BrailleTranslator
 import asyncio
+import threading
 import os
 import argparse
+from flask import Flask, request, jsonify
+import base64
+
+terminate_main_program = threading.Event()
+
+app = Flask(__name__)
+
+main = None
+
+
+@app.route("/process-documents", methods=["POST"])
+def process_documents():
+    form = request.form
+    terminate_main_program.set()
+    # access 'base64' key in form
+    base64_image = form["base64"]
+
+    # save as image.jpg
+    with open("image.jpg", "wb") as f:
+        f.write(base64.b64decode(base64_image))
+    if main is not None:
+        print(main.vr.main("image.jpg"))
+    terminate_main_program.clear()
+    return jsonify({"success": True})
 
 
 def speech_to_text():
@@ -28,8 +54,7 @@ def volume_down():
 ## /DUMMY ##
 
 
-def image_to_text(debug=False):
-    vr = VisionRecogniser(debug)
+def image_to_text(vr: VisionRecogniser, debug=False):
     text = vr.main()
     return text
 
@@ -98,6 +123,7 @@ class Main:
         self.__braille_display = braille_display
         self.__text_to_speech = text_to_speech
         self.__bt = BrailleTranslator()
+        self.vr = VisionRecogniser(debug)
 
         self.__debug = debug
         self.__mode = MODE.DEFAULT
@@ -203,8 +229,8 @@ class Main:
         print(f"current mode: {self.__mode}")
         if self.__mode == MODE.CAMERA:
             if key == KEY_SPACE:
-                img = image_to_text(self.__debug)
-                print(f"OCR: {img}")
+                img = image_to_text(self.vr, self.__debug)
+                self.__set_display_text(img)
                 pass
         else:
             if key in REGULAR_KEYS:
@@ -256,6 +282,22 @@ class Main:
         pass  # TEMP
 
 
+def run_main():
+    # Your main program logic goes here
+    global terminate_main_program, main
+    try:
+        with BrailleDisplay() as display, SpeechOutput() as tts:
+            while not terminate_main_program.is_set():
+                main = Main(display, tts, args.debug)
+                main.run()
+    except KeyboardInterrupt:
+        pass
+
+
+def run_flask():
+    app.run()  # You can specify host and port here if needed
+
+
 if __name__ == "__main__":
     # flags
     parser = argparse.ArgumentParser(description="BrailleEd program")
@@ -274,8 +316,7 @@ if __name__ == "__main__":
         os.environ["GPIOZERO_PIN_FACTORY"] = os.environ.get(
             "GPIOZERO_PIN_FACTORY", "mock"
         )
-    try:
-        with BrailleDisplay() as display, SpeechOutput() as tts:
-            Main(display, tts, args.debug).run()
-    except KeyboardInterrupt:
-        print("exiting")
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
+
+    run_main()
