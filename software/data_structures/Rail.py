@@ -48,7 +48,7 @@ class Rail:
 
     def _backward(self, steps: int):
         self.motor_pins[0].off()
-        for _ in range(steps):
+        for _ in range(int(steps)):
             self.motor_pins[1].on()
             sleep(Constants.RAIL_DELAY)
             self.motor_pins[1].off()

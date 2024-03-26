@@ -21,19 +21,17 @@ app = Flask(__name__)
 main = None
 
 
-@app.route("/process-documents", methods=["POST"])
+@app.route("/send", methods=["POST"])
 def process_documents():
-    form = request.form
+    global main, terminate_main_program
     terminate_main_program.set()
-    # access 'base64' key in form
-    base64_image = form["base64"]
 
-    # save as image.jpg
-    with open("image.jpg", "wb") as f:
-        f.write(base64.b64decode(base64_image))
-    if main is not None:
-        print(main.vr.main("image.jpg"))
-    terminate_main_program.clear()
+    # access text
+    text = request.json["text"]
+
+    print(f"Received text: {text}")
+    if main:
+        main.set_display_text(text)
     return jsonify({"success": True})
 
 
@@ -104,7 +102,6 @@ class Main:
 
         self.__debug = debug
         self.__mode = MODE.DEFAULT
-        self.__vr = VisionRecogniser(debug)
 
     def run(self):
         listen_keyboard(on_press=self.__on_press, on_release=self.__on_release)
@@ -117,7 +114,7 @@ class Main:
             else self.__display_text_uncontracted
         )
 
-    def __set_display_text(self, text: str):
+    def set_display_text(self, text: str):
         print(
             f'old display text: "{self.__display_text_alpha}"; new display text: "{text}"'
         )
@@ -205,17 +202,18 @@ class Main:
             self.__text_to_speech.speak(key)
 
         print(f"current mode: {self.__mode}")
-        if key == Constants.KEY_SPACE:
-            img = image_to_text(self.vr, self.__debug)
-            self.__set_display_text(img)
-            pass
+        if self.__mode == MODE.CAMERA:
+            if key == Constants.KEY_SPACE:
+                img = image_to_text(self.vr, self.__debug)
+                self.set_display_text(img)
+                pass
         else:
             if key in Constants.REGULAR_KEYS:
                 self.__keyboard_entry_text += key
             if key == Constants.KEY_SPACE:
                 self.__keyboard_entry_text += " "
             elif key == Constants.KEY_SUBMIT_TEXT_ENTRY:
-                self.__set_display_text(self.__keyboard_entry_text)
+                self.set_display_text(self.__keyboard_entry_text)
                 self.__keyboard_entry_text = ""
             elif key == Constants.KEY_BACKSPACE_TEXT_ENTRY:
                 self.__keyboard_entry_text = self.__keyboard_entry_text[:-1]
@@ -229,7 +227,7 @@ class Main:
             elif key == Constants.KEY_SPEAK_STORED:
                 self.__text_to_speech.speak(self.__display_text_alpha)
             elif key == Constants.KEY_MICROPHONE:
-                self.__set_display_text(speech_to_text())
+                self.set_display_text(speech_to_text())
             elif key == Constants.KEY_CAMERA:
                 self.__mode = MODE.CAMERA
                 return
@@ -260,19 +258,20 @@ class Main:
 
 
 def run_main():
-    # Your main program logic goes here
     global terminate_main_program, main
     try:
         with BrailleDisplay() as display, SpeechOutput() as tts:
             while not terminate_main_program.is_set():
+                print("Ejntered- while loop")
                 main = Main(display, tts, args.debug)
+                print("Main has been created")
                 main.run()
     except KeyboardInterrupt:
         pass
 
 
 def run_flask():
-    app.run()  # You can specify host and port here if needed
+    app.run(host="0.0.0.0", port=5001)
 
 
 if __name__ == "__main__":

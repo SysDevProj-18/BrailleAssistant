@@ -8,18 +8,24 @@ class Constants:
     RAIL_DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
     RAIL_DEGREE_PER_ROTATION = 1.8
     RAIL_GAP_LEFT_RIGHT = 2.0
-    RAIL_INTER_CELL_GAP = 70  # number of steps for the small gap
-    RAIL_MULTI_CELL_GAP = 30  # number of steps for a big gap
+    RAIL_INTER_CELL_GAP = 90  # number of steps for the small gap
+    RAIL_MULTI_CELL_GAP = 50  # number of steps for a big gap
 
-    STEPPER_IN2 = 16
-    STEPPER_IN3 = 20
-    STEPPER_IN4 = 21
-    STEPPER_IN1 = 26
-    STEPPER_GEAR_RATIO = 1
+    STEPPER_IN1 = 22
+    STEPPER_IN2 = 23
+    STEPPER_IN3 = 24
+    STEPPER_IN4 = 10
+    STEPPER_GEAR_RATIO = 15 / 40
     STEPPER_DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
     STEPPER_FULL_ROTATION = 500.0  # The total number of steps to complete a rotation
     STEPPER_DEGREE_PER_ROTATION = 360.0 / STEPPER_FULL_ROTATION
     STEPPER_MID_OFFSET = 22.5  # the offset to align all the pips to face up
+
+    LIFTER_IN1 = 17
+    LIFTER_IN2 = 27
+    LIFTER_LIFT_DIST = 6
+    LIFTER_DELAY = 0.005
+    LIFTER_END_DIST = 23
 
     STEPPER_STEP_COUNT = 8
     REGULAR_KEYS = list("qwertyuiopasdfghjklzxcvbnm0123456789.:,;!?'\"(){}[]/\\-")
@@ -40,18 +46,3 @@ class Constants:
     KEY_VOLUME_DOWN = "pageup"
     DISPLAY_SIZE = 10
     BRAILLE_SPACE = (HalfCell.NO_DOT, HalfCell.NO_DOT)
-
-    RAIL_GEAR_RATIO = 1
-    RAIL_DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
-    RAIL_DEGREE_PER_ROTATION = 1.8
-    RAIL_GAP_LEFT_RIGHT = 2.0
-    RAIL_INTER_CELL_GAP = 70  # number of steps for the small gap
-    RAIL_MULTI_CELL_GAP = 30  # number of steps for a big gap
-
-    STEPPER_GEAR_RATIO = 1
-    STEPPER_DELAY = 0.001  # in seconds, lower it to increase the speed of the motor
-    STEPPER_FULL_ROTATION = 500.0  # The total number of steps to complete a rotation
-    STEPPER_DEGREE_PER_ROTATION = 360.0 / STEPPER_FULL_ROTATION
-    STEPPER_MID_OFFSET = 22.5  # the offset to align all the pips to face up
-
-    STEPPER_STEP_COUNT = 8

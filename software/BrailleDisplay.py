@@ -1,4 +1,4 @@
-from data_structures import HalfCell, Stepper, Rail, Wheel
+from data_structures import HalfCell, Stepper, Rail, Wheel, Lifter
 from constants import Constants
 
 
@@ -6,10 +6,11 @@ class BrailleDisplay:
     NUM_CELLS = 10  # TODO merge this with DISPLAY_SIZE in main
 
     class BrailleCell:
-        def __init__(self, stepper: Stepper, rail: Rail, id):
+        def __init__(self, stepper: Stepper, rail: Rail, lifter: Lifter, id):
             self._l_wheel_pos = HalfCell.NO_DOT
             self._r_wheel_pos = HalfCell.NO_DOT
             self.stepper = stepper
+            self.lifter = lifter
             self.rail = rail
             self.id = id
 
@@ -38,12 +39,16 @@ class BrailleDisplay:
             elif pos < half_cell:
                 # rotate down
                 self.rail.move_to(self.id, wheel)
-                self.stepper.movement((half_cell - pos), False)
+                self.lifter.down(Constants.LIFTER_LIFT_DIST)
+                self.stepper.movement((half_cell - pos), True)
+                self.lifter.up(Constants.LIFTER_LIFT_DIST)
             else:
                 # rotate up
                 # DIRECTION_UP
                 self.rail.move_to(self.id, wheel)
-                self.stepper.movement((pos - half_cell), True)
+                self.lifter.down(Constants.LIFTER_LIFT_DIST)
+                self.stepper.movement((pos - half_cell), False)
+                self.lifter.up(Constants.LIFTER_LIFT_DIST)
 
             # updating the position after rotation
             if wheel == Wheel.LEFT:
@@ -67,11 +72,18 @@ class BrailleDisplay:
 
         rail_IN1 = Constants.RAIL_IN1
         rail_IN2 = Constants.RAIL_IN2
+
+        LIFTER_IN1 = Constants.LIFTER_IN1
+        LIFTER_IN2 = Constants.LIFTER_IN2
         self.stepper = Stepper([stepper_IN1, stepper_IN2, stepper_IN3, stepper_IN4])
         self.rail = Rail([rail_IN1, rail_IN2])
+        self.lifter = Lifter([LIFTER_IN1, LIFTER_IN2])
         self.cells = [
-            self.BrailleCell(self.stepper, self.rail, i) for i in range(self.NUM_CELLS)
+            self.BrailleCell(self.stepper, self.rail, self.lifter, i)
+            for i in range(self.NUM_CELLS)
         ]
+        # lift the display up at the start
+        self.lifter.up(Constants.LIFTER_LIFT_DIST)
 
     def __enter__(self):
         # No point clearing unless we can detect initial positions of the wheels
@@ -80,6 +92,7 @@ class BrailleDisplay:
     def __exit__(self, exc_type, exc_value, traceback):
         # Ensure clear on exit to prevent misaligned wheels on future launch
         self.clear()
+        self.lifter.down(Constants.LIFTER_LIFT_DIST)
 
     def display(self, braille: "list[tuple[HalfCell, HalfCell]]"):
         if len(braille) > self.NUM_CELLS:
@@ -98,6 +111,7 @@ class BrailleDisplay:
                 )
             # return to cell 0
             self.rail.move_to(0, Wheel.LEFT)
+            self.lifter.up(Constants.LIFTER_END_DIST - Constants.LIFTER_LIFT_DIST)
 
     def clear(self):
         self.display([])

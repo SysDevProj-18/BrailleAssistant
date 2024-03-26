@@ -4,18 +4,15 @@ import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '~/components/ui/button';
-
-const upload = async (url, base64) => {
-  const form = new FormData();
-  form.append('base64', base64);
-
-
+import MlkitOcr, { MlkitOcrResult } from 'react-native-mlkit-ocr';
+import MLKit from 'react-native-mlkit-ocr';
+const upload = async (url: string, text: string) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-    body: form
+    body: JSON.stringify({ text: text }),
   });
   const responseJson = await response.json();
   return responseJson;
@@ -30,13 +27,32 @@ export default function Page() {
 
   useEffect(() => {
     if (picture) {
-      // send post 
-      const base64 = picture.base64;
-      const formData = new FormData();
-      formData.append('base64', base64!);
+      const call = async () => {
+        const result = await MlkitOcr.detectFromUri(picture.uri)
+        return result
+      }
 
-      upload('http://127.0.0.1:5000/process-documents', base64!).then((response) => {
-        console.log(response);
+
+      call().then((res) => {
+        let text = ''
+        res.forEach((block) => {
+          text += block.text + '\n'
+        })
+        fetch('http://192.168.175.66:5001/send', {
+          // fetch('http://192.168.175.245:5001/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: text }),
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            router.dismiss(1)
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       })
     }
   }, [picture]);
