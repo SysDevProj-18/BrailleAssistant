@@ -175,6 +175,26 @@ class Main:
             self.__current_display_braille()[self.__current_display_page]
         )
 
+    def __gameDict(self, type, inp):
+
+        if type == 1:
+
+            return {"type": "KEYBOARD", "Input": inp}
+        
+        elif type == 2:
+
+            return {"type": "MICROPHONE", "Input": inp}
+        
+        elif type == 3:
+
+            return {"type": "RANDOMTEXT", "Input": inp}
+        
+        elif type == 4:
+
+            return {"type": "GAMEKEY", "Input": inp}
+        
+        return {"type": "UNKNOWN", "Input": inp}
+
     def __on_press(self, key):
         print(f"'{key}' pressed")
 
@@ -187,19 +207,22 @@ class Main:
             if key == Constants.KEY_SPACE:
                 img = image_to_text(self.__vr, self.__debug)
                 print(f"OCR: {img}")
+                self.__set_display_text(img)
                 pass
         else:
 
             if self.__mode == MODE.GAME:
                 if key == Constants.KEY_GAME_OPTIONS:
-                    self.__game.sendInput(key)
+                    self.__game.sendInput(self.__game.gameDict(1, key))
                     return
                 elif key == Constants.KEY_MICROPHONE:
-                    self.__game.sendInput(speech_to_text())
+                    self.__game.sendInput(self.__game.gameDict(2, speech_to_text()))
                     return
                 elif key == Constants.KEY_GAME:
-                    self.__game.sendInput("#")
+                    self.__game.sendInput(self.__game.gameDict(4, key))
                     return
+                elif key == Constants.KEY_GAME_RESTART:
+                    self.__game.sendInput(self.__game.gameDict(3, self.__game.getRandomText()))
             if key in Constants.REGULAR_KEYS:
                 self.__keyboard_entry_text += key
             if key == Constants.KEY_SPACE:

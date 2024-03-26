@@ -36,6 +36,34 @@ class Game:
 
             self.__queue.put(inp)
 
+    def __getType(typeNum):
+
+        if type == 1:
+
+            return "KEYBOARD"
+        
+        elif type == 2:
+
+            return "MICROPHONE"
+        
+        elif type == 3:
+
+            return "RANDOMTEXT"
+        
+        elif type == 4:
+
+            return "GAMEKEY"
+        
+        return "UNKNOWN"
+
+    def gameDict(self, type = 0, inp = None):
+
+        if not inp:
+
+            return self.__getType(type)
+        
+        return {"type": self.__getType(type), "input": inp}
+
     def __getInput(self):
 
         self.__listening = True
@@ -47,7 +75,7 @@ class Game:
                 self.__listening = False
                 return inp
 
-    def __getRandomText(self):
+    def getRandomText(self):
 
         return random.choice(self.__allGameTexts)
     
@@ -55,38 +83,46 @@ class Game:
 
         self.__db.addText(text)
 
-    def __gameMenu(self):
+    def __gameMenu(self, randomText):
 
         while True:
 
-            text = self.__getRandomText()
-            self.__brailleOut(text)
-            inp = self.__getInput()
+            inp = self.__getInput() 
 
-            if text == inp:
+            while inp["type"] != "MICROPHONE":
 
-                self._speechOut("Well Done! You correctly identified the word")
+                inp = self.__getInput()
+
+            if randomText == inp["input"]: 
+
+                self.__speechOut("Well Done! You correctly identified the word")
 
             else:
 
-                self.__speechOut("Ah, sorry but that's incorrect. The phrase that we were looking for is " + text + " and not " + inp)
+                self.__speechOut("Ah, sorry but that's incorrect. The phrase that we were looking for is " + randomText["input"] + " and not " + inp["input"])
 
             self.__speechOut("Press enter to go again or f7 to quit")
 
-            if self.__getInput() == "#":
+            inp = self.__getInput()
+
+            if inp == self.gameDict(4, "f7"):
 
                 return
+            
+            elif inp["type"] == "RANDOMTEXT":
+
+                return self.__gameMenu(inp["input"])
 
     def __addTextMenu(self):
 
         self.__speechOut("Type in the phrase you want to add, or press f7 to go back")
         inp = self.__getInput()
 
-        if inp == "#":
+        if inp == self.gameDict(4, "f7"):
 
             return
         
-        self.__addText(inp)
+        self.__addText(inp["input"])
 
     def __mainMenu(self):
 
@@ -95,15 +131,15 @@ class Game:
             self.__speechOut("press 1 to begin, press 2 to add a new phrase into the game, or press f7 to quit")
             inp = self.__getInput()
 
-            if inp == "1":
+            if inp == self.gameDict(1, "1"):
 
                 self.__gameMenu()
 
-            elif inp == "2":
+            elif inp == self.gameDict(1, "2"):
 
                 self.__addTextMenu()
             
-            elif inp == "#":
+            elif inp == self.gameDict(4, "f7"):
 
                 return
         
