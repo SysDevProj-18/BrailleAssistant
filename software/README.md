@@ -1,7 +1,7 @@
 # SDP Software
 [![Nox](https://img.shields.io/badge/%F0%9F%A6%8A-Nox-D85E00.svg)](https://github.com/wntrblm/nox)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![CI](https://github.com/SysDevProj-18/BrailleAssistant/actions/workflows/python-package.yml/badge.svg)](https://github.com/SysDevProj-18/BrailleAssistant/actions/workflows/python-package.yml)
+[![CI](https://github.com/SysDevProj-18/BrailleAssistant/actions/workflows/CI.yml/badge.svg)](https://github.com/SysDevProj-18/BrailleAssistant/actions/workflows/CI.yml)
 
 ## VOSK Model
 To run the software, you need to have Python installed, and the following dependencies:
