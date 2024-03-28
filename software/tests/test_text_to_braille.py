@@ -1,4 +1,3 @@
-import pytest
 from text_to_braille import BrailleTranslator, braille_to_halfcells
 
 
@@ -13,4 +12,4 @@ class TestTextToBraille:
 
     def test_extreme(self):
         assert (self.tl.translate("Sphinx of black quartz, judge my vow", False)
-                == braille_to_halfcells("⠎⠏⠓⠊⠝⠭⠀⠕⠋⠀⠃⠇⠁⠉⠅⠀⠟⠥⠁⠗⠞⠵⠂⠀⠚⠥⠙⠛⠑⠀⠍⠽⠀⠧⠕⠺"))
+                == braille_to_halfcells("⠠⠎⠏⠓⠊⠝⠭⠀⠕⠋⠀⠃⠇⠁⠉⠅⠀⠟⠥⠁⠗⠞⠵⠂⠀⠚⠥⠙⠛⠑⠀⠍⠽⠀⠧⠕⠺"))
