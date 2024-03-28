@@ -1,8 +1,8 @@
 import logging
 
-#from .Rules import *
-#from .brailleFormats import *
-#from data_structures import HalfCell
+from .Rules import *
+from .brailleFormats import *
+from data_structures import HalfCell
 
 
 # using Unified English Braille tables as they seem better maintained and more comprehensive.
