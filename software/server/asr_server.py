@@ -4,7 +4,6 @@ import json
 import os
 import sys
 import asyncio
-import pathlib
 import websockets
 import concurrent.futures
 import logging
@@ -33,7 +32,7 @@ async def recognize(websocket, path):
     show_words = args.show_words
     max_alternatives = args.max_alternatives
 
-    logging.info('Connection from %s', websocket.remote_address);
+    logging.info('Connection from %s', websocket.remote_address)
 
     while True:
 

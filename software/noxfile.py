@@ -3,6 +3,7 @@ import nox
 
 @nox.session
 def test(session):
+    session.install("-r", "requirements.txt")
     session.install(".")
     session.install("pytest")
     session.run("pytest")
@@ -11,4 +12,4 @@ def test(session):
 @nox.session
 def lint(session):
     session.install("ruff")
-    session.run("ruff", "check", ".")
+    session.run("ruff", "check", "--output-format=github", ".")

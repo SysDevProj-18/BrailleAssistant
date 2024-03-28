@@ -4,7 +4,6 @@
 import matplotlib.pyplot as plt
 import csv
 import os 
-import re
 # read the csv file
 expected = {} 
 # find any files that start with results

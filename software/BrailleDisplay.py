@@ -1,4 +1,3 @@
-from enum import IntEnum, Enum
 from data_structures import HalfCell, Stepper, Rail, Wheel
 
 stepper_IN1 = 26
