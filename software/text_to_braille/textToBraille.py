@@ -1,7 +1,8 @@
 import logging
+import regex as re
 
-from .Rules import *
-from .brailleFormats import *
+from .Rules import MapRule, CharacterRule
+from .brailleFormats import dots_to_braille, braille_to_halfcells, is_braille
 from data_structures import HalfCell
 
 
