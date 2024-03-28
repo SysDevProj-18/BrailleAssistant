@@ -1,8 +1,9 @@
 import logging
+import regex as re
 
-#from .Rules import *
-#from .brailleFormats import *
-#from data_structures import HalfCell
+from .Rules import MapRule, CharacterRule
+from .brailleFormats import dots_to_braille, braille_to_halfcells, is_braille
+from data_structures import HalfCell
 
 
 # using Unified English Braille tables as they seem better maintained and more comprehensive.

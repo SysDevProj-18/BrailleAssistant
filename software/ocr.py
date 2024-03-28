@@ -28,7 +28,7 @@ class VisionRecogniser:
             if keyboard.is_pressed(" "):
                 break
             elif time.time() - start_time > timeout:
-                print(f"Timeout reached! Scanning your text...")
+                print("Timeout reached! Scanning your text...")
                 break
 
     def captureImage(self):

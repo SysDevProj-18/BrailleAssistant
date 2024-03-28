@@ -1,7 +1,6 @@
 # THIS IS SOME F'D UP CODE BUT IT MIGHT PROVE TO BE USEFUL SO IM KEEPING IT HERE FOR NOW ~ FL0W
 
 import keyboard
-import threading
 import speechOutput
 
 def monitorKeyboard():

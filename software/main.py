@@ -130,7 +130,7 @@ class Main:
         print(f"...words are {pages_to_string(words)}...")
 
         if words == [[]]:
-            print(f"...no words; returning empty page [[]].")
+            print("...no words; returning empty page [[]].")
             return [[]]
 
         pages = []
