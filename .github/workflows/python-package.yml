@@ -5,6 +5,10 @@ name: CI
 
 on: push
 
+defaults:
+  run:
+    working-directory: "./software"
+
 jobs:
   build:
     runs-on: ubuntu-latest
