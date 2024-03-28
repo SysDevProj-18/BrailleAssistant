@@ -2,7 +2,7 @@
 A series of classes designed to encode the rules for Braille translation.
 """
 import regex as re
-from typing import override
+from overrides import override
 
 
 class MapRule:
